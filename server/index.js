@@ -157,12 +157,13 @@ initDatabase().catch(err => {
 // =========================================================
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const stripeClient = await getStripeClient();
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     postgresConfigured: Boolean(process.env.DATABASE_URL || process.env.PGHOST),
-    stripeConfigured: Boolean(stripeSecretKey)
+    stripeConfigured: Boolean(stripeClient)
   });
 });
 
