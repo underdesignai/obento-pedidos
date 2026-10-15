@@ -133,6 +133,7 @@ export default function TrackingPage() {
           return 1;
         case 'en_camino':
           return 2;
+        case 'delivery_entregado':
         case 'entregado':
           return 3;
         default:
