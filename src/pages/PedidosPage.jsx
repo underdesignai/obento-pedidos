@@ -261,7 +261,12 @@ export default function PedidosPage() {
       <header className="site-header pedidos-header">
         <div className="header-container">
           <div className="brand-group" onClick={() => (window.location.href = '/')} style={{ cursor: 'pointer' }}>
-            <img src="/images/logo-obento.png" alt="Obento" className="nav-logo" />
+            <img
+              src="/images/logo-obento.webp"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
+              alt="Obento"
+              className="nav-logo"
+            />
             <div className="nav-brand-text">
               <span className="brand-title small">OBENTO</span>
               <span className="nav-brand-sub hide-on-mobile">Takeaway · Pedidos Online</span>

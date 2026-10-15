@@ -40,7 +40,15 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
       {/* Imagen */}
       {dish.imagen && (
         <div className="dish-order-media">
-          <img src={dish.imagen} alt={dish.nombre} loading="lazy" />
+          <img
+            src={dish.imagen}
+            alt={dish.nombre}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/images/placeholder.webp';
+            }}
+          />
           <div className="dish-order-price-tag">
             {fmt(currentPrice)}
           </div>

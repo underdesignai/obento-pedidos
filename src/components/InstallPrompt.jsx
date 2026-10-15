@@ -96,7 +96,8 @@ export default function InstallPrompt() {
         <div className="obento-install-left">
           <div className="obento-install-logo-wrap">
             <img
-              src="/images/logo-obento.png"
+              src="/images/logo-obento.webp"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
               alt="Obento Logo"
               className="obento-install-logo"
             />

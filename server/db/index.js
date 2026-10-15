@@ -412,7 +412,7 @@ export async function obtenerCartaDb() {
       nombre: fixCorruptedAccents(row.nombre),
       descripcion: fixCorruptedAccents(row.descripcion || ''),
       precio: Number(row.precio),
-      imagen: row.imagen || '/images/placeholder.jpg',
+      imagen: (row.imagen ? row.imagen.replace(/\.jpe?g$/i, '.webp') : '/images/placeholder.webp'),
       alergenos: row.alergenos ? row.alergenos.split(',').map(s => s.trim()).filter(Boolean) : [],
       destacado: Boolean(row.destacado)
     }));

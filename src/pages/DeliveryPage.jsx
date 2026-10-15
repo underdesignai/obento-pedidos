@@ -218,7 +218,12 @@ export default function DeliveryPage() {
         <div className="delivery-header-main">
           <div className="delivery-brand">
             <div className="delivery-logo-badge">
-              <img src="/images/logo-obento.png" alt="Obento" className="delivery-logo-img" />
+              <img
+                src="/images/logo-obento.webp"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
+                alt="Obento"
+                className="delivery-logo-img"
+              />
             </div>
             <div>
               <div className="delivery-brand-title">OBENTO</div>
