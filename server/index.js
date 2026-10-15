@@ -255,8 +255,8 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
       cliente_email: cliente_email ? sanitizeInput(cliente_email, 120) : null,
       tipo_entrega: tipo_entrega === 'domicilio' ? 'domicilio' : 'recogida_local',
       direccion_entrega: direccion_entrega ? sanitizeInput(direccion_entrega, 200) : null,
-      direccion_detalles: direccion_detalles ? sanitizeInput(direccion_detalles, 100) : null,
-      codigo_postal: codigo_postal ? sanitizeInput(codigo_postal, 10) : null,
+      direccion_detalles: (direccion_detalles || req.body.direccionDetalles) ? sanitizeInput(direccion_detalles || req.body.direccionDetalles, 100) : null,
+      codigo_postal: (codigo_postal || req.body.codigoPostal) ? sanitizeInput(codigo_postal || req.body.codigoPostal, 10) : null,
       hora_recogida: sanitizeInput(hora_recogida, 50) || 'Lo antes posible',
       notas: notas ? sanitizeInput(notas, 400) : '',
       metodo_pago: metodo_pago === 'stripe' ? 'stripe' : 'restaurante',
@@ -361,6 +361,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
       direccion_entrega,
       direccion_detalles,
       codigo_postal,
+      codigoPostal,
       hora_recogida,
       notas,
       items,
@@ -375,6 +376,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
     }
 
+    const cp = codigo_postal || codigoPostal || null;
+
     // 1) Registrar pedido en estado 'pendiente' en la base de datos
     let pedido;
     const payload = {
@@ -383,8 +386,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       cliente_email,
       tipo_entrega: tipo_entrega || 'recogida_local',
       direccion_entrega: tipo_entrega === 'domicilio' ? direccion_entrega : null,
-      direccion_detalles: tipo_entrega === 'domicilio' ? direccion_detalles : null,
-      codigo_postal: tipo_entrega === 'domicilio' ? codigoPostal || codigo_postal : null,
+      direccion_detalles: tipo_entrega === 'domicilio' ? (direccion_detalles || req.body.direccionDetalles || null) : null,
+      codigo_postal: tipo_entrega === 'domicilio' ? cp : null,
       hora_recogida: hora_recogida || 'Lo antes posible (~35-45 min)',
       notas: notas || '',
       metodo_pago: 'stripe',
