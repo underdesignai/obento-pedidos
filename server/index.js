@@ -622,7 +622,10 @@ app.patch('/api/pedidos/:id/status', verifyStaffOrDelivery, async (req, res) => 
     try {
       const pedido = await actualizarEstadoPedidoDb(cleanId, cleanEstado, { repartidor_nombre: cleanRepartidor });
       if (cleanEstado === 'listo' && pedido?.cliente_email) {
-        sendOrderReadyEmail(pedido.cliente_email, pedido).catch(() => {});
+        const pedidoCompleto = (await obtenerPedidoPorIdDb(pedido.id || cleanId)) || pedido;
+        sendOrderReadyEmail(pedido.cliente_email, pedidoCompleto).catch((err) => {
+          console.error('Error enviando email de pedido listo:', err.message);
+        });
       }
       return res.json({ success: true, pedido });
     } catch {

@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
-import { pool } from './db/index.js';
+import { pool, obtenerPedidoPorIdDb } from './db/index.js';
 
 /**
  * Obtiene credenciales de email prioritariamente desde variables de entorno (.env)
@@ -100,46 +100,47 @@ async function getTransporter() {
  * Plantilla HTML base con diseño corporativo Obento
  */
 function baseEmailLayout(content) {
-  return `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body style="margin:0;padding:0;background:#0d0d12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e5e7eb;">
-    <div style="max-width:580px;margin:30px auto;background:#15151c;border-radius:14px;overflow:hidden;border:1px solid rgba(200,30,34,0.35);box-shadow:0 15px 35px rgba(0,0,0,0.6);">
-      
-      <!-- Cabecera Obento -->
-      <div style="background:linear-gradient(135deg, #180507 0%, #0d0d12 100%);padding:28px 32px;display:flex;align-items:center;border-bottom:1px solid rgba(200,30,34,0.25);">
-        <div style="border-left:4px solid #c81e22;padding-left:14px;">
-          <div style="font-size:24px;font-weight:900;letter-spacing:0.18em;color:#f3ede0;line-height:1;">
-            OBENTO
-          </div>
-          <div style="font-size:11px;color:#c81e22;text-transform:uppercase;letter-spacing:0.25em;margin-top:4px;font-weight:700;">
-            Japanese Food · La Ñora
-          </div>
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obento Japanese Food</title>
+</head>
+<body style="margin:0;padding:0;background:#0d0d12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e5e7eb;">
+  <div style="max-width:580px;margin:30px auto;background:#15151c;border-radius:14px;overflow:hidden;border:1px solid rgba(200,30,34,0.35);box-shadow:0 15px 35px rgba(0,0,0,0.6);">
+    
+    <!-- Cabecera Obento -->
+    <div style="background:linear-gradient(135deg, #180507 0%, #0d0d12 100%);padding:28px 32px;display:flex;align-items:center;border-bottom:1px solid rgba(200,30,34,0.25);">
+      <div style="border-left:4px solid #c81e22;padding-left:14px;">
+        <div style="font-size:24px;font-weight:900;letter-spacing:0.18em;color:#f3ede0;line-height:1;">
+          OBENTO
+        </div>
+        <div style="font-size:11px;color:#c81e22;text-transform:uppercase;letter-spacing:0.25em;margin-top:4px;font-weight:700;">
+          Japanese Food · La Ñora
         </div>
       </div>
-
-      <!-- Contenido Principal -->
-      <div style="padding:32px 32px 28px;">
-        ${content}
-      </div>
-
-      <!-- Pie de página -->
-      <div style="background:#0e0e14;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">
-        <p style="font-size:12px;color:#9ca3af;margin:0 0 6px;line-height:1.5;">
-          📍 C. Amargura, 3 · 30830 La Ñora, Murcia · 📞 Tel. 613 927 596
-        </p>
-        <p style="font-size:11px;color:#6b7280;margin:0;">
-          © ${new Date().getFullYear()} Obento Japanese Food · Todos los derechos reservados.
-        </p>
-      </div>
-
     </div>
-  </body>
-  </html>`;
+
+    <!-- Contenido Principal -->
+    <div style="padding:32px 32px 28px;">
+      ${content}
+    </div>
+
+    <!-- Pie de página -->
+    <div style="background:#0e0e14;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">
+      <p style="font-size:12px;color:#9ca3af;margin:0 0 6px;line-height:1.5;">
+        📍 Obento Sushi: Calle Amargura 3, 30830 La Ñora, Murcia · 📞 Tel. 613 927 596
+      </p>
+      <p style="font-size:11px;color:#6b7280;margin:0;">
+        © ${new Date().getFullYear()} Obento Japanese Food · Todos los derechos reservados.
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>`;
 }
 
 function itemsTableHtml(items) {
@@ -209,7 +210,7 @@ export async function sendOrderConfirmedEmail(to, data) {
         🕐 <strong>Hora estimada de recogida:</strong> <span style="color:#f3ede0;">${data.hora_recogida || 'Lo antes posible (~25-35 min)'}</span>
       </div>
       <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
-        📍 <strong>Lugar de recogida:</strong> <span style="color:#f3ede0;">C. Amargura, 3, La Ñora (Murcia)</span>
+        📍 <strong>Lugar de recogida:</strong> <span style="color:#f3ede0;">Obento Sushi: Calle Amargura 3, 30830 La Ñora, Murcia</span>
       </div>
     </div>
 
@@ -252,56 +253,78 @@ export async function sendOrderConfirmedEmail(to, data) {
 
 /**
  * 2. Enviar Email de Pedido Listo para recoger (Automático cuando cocina pulsa "Listo")
+ * Sigue la misma línea visual y estructura corporativa que el email de confirmación
  */
 export async function sendOrderReadyEmail(to, data) {
   if (!to) return;
   const { transporter, from: emailFrom } = await getTransporter();
 
+  // Asegurar carga de items desde la BD si no vienen en data
+  let orderData = { ...data };
+  if ((!orderData.items || !orderData.items.length) && (orderData.id || orderData.numero_pedido)) {
+    try {
+      const full = await obtenerPedidoPorIdDb(orderData.numero_pedido || orderData.id);
+      if (full && Array.isArray(full.items) && full.items.length > 0) {
+        orderData = { ...full, ...orderData, items: full.items };
+      }
+    } catch {
+      // continuar con los datos actuales
+    }
+  }
+
   const baseUrl = (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'))
     ? process.env.CLIENT_URL.replace(/\/$/, '')
     : 'https://pedidos.obentojapanesefood.es';
-  const trackingUrl = data.numero_pedido 
-    ? `${baseUrl}/seguimiento?id=${data.numero_pedido}`
+  const trackingUrl = orderData.numero_pedido 
+    ? `${baseUrl}/seguimiento?id=${orderData.numero_pedido}`
     : `${baseUrl}/seguimiento`;
 
   const html = baseEmailLayout(`
-    <div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);color:#22c55e;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
-      🍣 ¡Recién Preparado!
+    <div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+      🟢 ¡Pedido Listo para Recoger!
     </div>
-    <h1 style="font-size:26px;color:#22c55e;margin:0 0 10px;font-weight:900;">
-      ¡Tu pedido ya está listo para recoger! 🥡
+    <h1 style="font-size:24px;color:#f3ede0;margin:0 0 10px;font-weight:800;">
+      ¡Tu pedido ya está listo, ${orderData.cliente_nombre}! 🍣
     </h1>
     <p style="color:#d1d5db;font-size:15px;line-height:1.5;margin:0 0 22px;">
-      Hola <strong>${data.cliente_nombre}</strong>, nuestro equipo de sushiman acaba de empaquetar tu pedido. Ya puedes pasar a recogerlo al local.
+      Nuestro equipo de cocina acaba de empaquetar tus platos recién elaborados con ingredientes frescos. Ya puedes pasar a recoger tu pedido por nuestro local cuando desees.
     </p>
 
-    <!-- Tarjeta del Pedido -->
-    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:18px 22px;margin-bottom:24px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <!-- Caja del Pedido -->
+    <div style="background:rgba(200,30,34,0.08);border:1px solid rgba(200,30,34,0.3);border-radius:10px;padding:18px 22px;margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <span style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">NÚMERO DE PEDIDO</span>
-        <span style="font-family:monospace;font-size:24px;font-weight:900;color:#f3ede0;letter-spacing:0.05em;">${data.numero_pedido}</span>
+        <span style="font-family:monospace;font-size:24px;font-weight:900;color:#c81e22;letter-spacing:0.05em;">${orderData.numero_pedido}</span>
       </div>
-      <div style="font-size:14px;color:#e5e7eb;margin-top:6px;">
-        📍 <strong>Dirección de recogida:</strong> C. Amargura, 3, 30830 La Ñora, Murcia
+      <div style="font-size:13px;color:#d1d5db;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:6px;">
+        📍 <strong>Punto de recogida:</strong> <span style="color:#f3ede0;">Obento Sushi: Calle Amargura 3, 30830 La Ñora, Murcia</span>
       </div>
-      <div style="font-size:13px;color:#9ca3af;margin-top:6px;">
-        Muestra tu número de pedido <strong>${data.numero_pedido}</strong> en la barra o mostrador.
+      <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+        🏷️ <strong>Instrucciones:</strong> <span style="color:#f3ede0;">Indica tu número de pedido o nombre al llegar al mostrador.</span>
       </div>
     </div>
 
-    <div style="text-align:center;margin:24px 0;">
-      <a href="${trackingUrl}" target="_blank" style="display:inline-block;padding:12px 24px;border-radius:8px;background:rgba(255,255,255,0.08);color:#f3ede0;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,0.15);">
-        Ver Comprobante de Entrega →
+    <!-- Botón de Seguimiento en Vivo / Comprobante -->
+    <div style="text-align:center;margin:30px 0 25px;">
+      <a href="${trackingUrl}" target="_blank" style="display:inline-block;padding:14px 28px;border-radius:8px;background:linear-gradient(135deg, #c81e22 0%, #99151b 100%);color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;box-shadow:0 4px 18px rgba(200,30,34,0.4);">
+        🔴 Ver Comprobante y Estado del Pedido →
       </a>
+      <p style="font-size:12px;color:#9ca3af;margin-top:10px;">
+        Haz clic arriba para consultar los detalles y estado en tiempo real.
+      </p>
     </div>
 
-    <p style="font-size:13px;color:#9ca3af;text-align:center;margin-top:20px;">
-      ¡Muchísimas gracias por confiar en Obento Japanese Food! ¡Itadakimasu! 🥢
-    </p>
+    <!-- Resumen de Platos -->
+    ${itemsTableHtml(orderData.items)}
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;border-top:2px solid rgba(255,255,255,0.1);">
+      <span style="font-size:16px;font-weight:700;color:#f3ede0;">Total del pedido:</span>
+      <span style="font-size:22px;font-weight:900;color:#c81e22;font-family:monospace;">${Number(orderData.total || 0).toFixed(2).replace('.', ',')} €</span>
+    </div>
   `);
 
   if (!transporter) {
-    console.log(`ℹ️ [Email Simulado / Pendiente Credenciales] Para: ${to} | Asunto: Pedido Listo ${data.numero_pedido}`);
+    console.log(`ℹ️ [Email Simulado / Pendiente Credenciales] Para: ${to} | Asunto: Pedido Listo ${orderData.numero_pedido}`);
     return;
   }
 
@@ -309,10 +332,10 @@ export async function sendOrderReadyEmail(to, data) {
     await transporter.sendMail({
       from: emailFrom,
       to,
-      subject: `¡Tu pedido ya está listo para recoger! · ${data.numero_pedido} · OBENTO`,
+      subject: `¡Tu pedido ya está listo para recoger! · ${orderData.numero_pedido} · OBENTO Japanese Food`,
       html
     });
-    console.log(`✉️ Email de pedido listo enviado con éxito a ${to} para el pedido ${data.numero_pedido}`);
+    console.log(`✉️ Email de pedido listo enviado con éxito a ${to} para el pedido ${orderData.numero_pedido}`);
   } catch (err) {
     console.error(`⚠️ Error al enviar email de pedido listo a ${to}:`, err.message);
   }
