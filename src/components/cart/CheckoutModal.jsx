@@ -491,7 +491,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       <div className="payment-card-content">
                         <div className="payment-card-top">
                           <span className="payment-title">
-                            {tipoEntrega === 'domicilio' ? 'Pagar en Efectivo al Repartidor' : 'Pagar en el Restaurante'}
+                            {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en el restaurante'}
                           </span>
                           <span className="payment-badge-local">
                             {tipoEntrega === 'domicilio' ? 'En la Entrega' : 'Al Recoger'}
@@ -499,7 +499,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         </div>
                         <p className="payment-desc">
                           {tipoEntrega === 'domicilio'
-                            ? 'Paga en efectivo al repartidor de Obento cuando llegue a tu puerta con el pedido.'
+                            ? 'Paga al repartidor de Obento cuando llegue a tu puerta con el pedido.'
                             : 'Paga en el mostrador de Obento cuando vengas a por tu pedido.'}
                         </p>
                       </div>
