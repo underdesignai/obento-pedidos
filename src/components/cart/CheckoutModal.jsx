@@ -491,7 +491,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       <div className="payment-card-content">
                         <div className="payment-card-top">
                           <span className="payment-title">
-                            {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en el restaurante'}
+                            {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en el Restaurante'}
                           </span>
                           <span className="payment-badge-local">
                             {tipoEntrega === 'domicilio' ? 'En la Entrega' : 'Al Recoger'}
@@ -561,7 +561,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     <span style={{ color: '#ffffff', fontWeight: 'bold' }}>Pagar con tarjeta</span>
                   ) : (
                     <span style={{ color: '#ffffff', fontWeight: 'bold' }}>
-                      {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en restaurante'}
+                      {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en Restaurante'}
                     </span>
                   )}
                 </button>
