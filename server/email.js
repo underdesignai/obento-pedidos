@@ -210,7 +210,7 @@ export async function sendOrderConfirmedEmail(to, data) {
 
     introText = isOnlinePay
       ? `Hemos recibido tu pedido a domicilio correctamente y tu pago con tarjeta ha sido confirmado. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos. Te enviaremos un correo en cuanto nuestro repartidor salga hacia tu puerta.`
-      : `Tu comanda a domicilio ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará en efectivo al repartidor al recibir el pedido.`;
+      : `Tu comanda a domicilio ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará al repartidor al recibir el pedido (en efectivo o con tarjeta).`;
 
     deliveryDetailsHtml = `
       <div style="font-size:13px;color:#d1d5db;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:6px;">
@@ -232,7 +232,7 @@ export async function sendOrderConfirmedEmail(to, data) {
           💳 <strong>Método de pago:</strong> <span style="color:#4ade80;font-weight:bold;">Pagado online con tarjeta (Stripe)</span>
         </div>`
       : `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
-          💵 <strong>Método de pago:</strong> <span style="color:#fbbf24;font-weight:bold;">Abonar ${totalFormatted} € al repartidor (efectivo)</span>
+          💵 <strong>Método de pago:</strong> <span style="color:#fbbf24;font-weight:bold;">Abonar ${totalFormatted} € al repartidor (efectivo o tarjeta)</span>
         </div>`;
 
     totalLabel = isOnlinePay ? 'Total abonado:' : 'Total a pagar al repartidor:';
@@ -270,6 +270,26 @@ export async function sendOrderConfirmedEmail(to, data) {
     totalLabel = isOnlinePay ? 'Total abonado:' : 'Total a abonar en el local:';
   }
 
+  const pendingPaymentBox = (!isOnlinePay && isDelivery) ? `
+    <div style="background:rgba(251,191,36,0.12);border:2px solid #fbbf24;border-radius:12px;padding:18px 20px;margin-bottom:22px;text-align:center;">
+      <div style="display:inline-block;padding:4px 12px;border-radius:14px;background:#fbbf24;color:#0d0d12;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;">
+        💵 PAGO PENDIENTE AL REPARTIDOR
+      </div>
+      <div style="font-size:13px;color:#d1d5db;margin-bottom:4px;">
+        Importe total a abonar al repartidor al recibir tu pedido:
+      </div>
+      <div style="font-size:30px;font-weight:900;color:#fbbf24;font-family:monospace;letter-spacing:0.04em;line-height:1.1;">
+        ${totalFormatted} €
+      </div>
+      <div style="font-size:14px;color:#f3ede0;font-weight:700;margin-top:10px;line-height:1.4;">
+        Puedes pagar en <span style="color:#fbbf24;">EFECTIVO</span> o con <span style="color:#fbbf24;">TARJETA</span> (datáfono) directamente al repartidor.
+      </div>
+      <div style="font-size:12px;color:#9ca3af;margin-top:6px;">
+        Por favor ten preparado el importe exacto o tu tarjeta para agilizar la entrega en tu puerta.
+      </div>
+    </div>
+  ` : '';
+
   const html = baseEmailLayout(`
     ${badgeHtml}
     <h1 style="font-size:24px;color:#f3ede0;margin:0 0 10px;font-weight:800;">
@@ -288,6 +308,8 @@ export async function sendOrderConfirmedEmail(to, data) {
       ${deliveryDetailsHtml}
       ${paymentDetailLine}
     </div>
+
+    ${pendingPaymentBox}
 
     <!-- Botón de Seguimiento en Vivo -->
     <div style="text-align:center;margin:30px 0 25px;">
@@ -316,7 +338,9 @@ export async function sendOrderConfirmedEmail(to, data) {
   try {
     let subjectPrefix = '¡Pedido confirmado!';
     if (isDelivery) {
-      subjectPrefix = isOnlinePay ? '🛵 ¡Pedido a domicilio confirmado y pagado!' : '🛵 ¡Pedido a domicilio confirmado!';
+      subjectPrefix = isOnlinePay
+        ? '🛵 ¡Pedido a domicilio confirmado y pagado!'
+        : `🛵 ¡Pedido a domicilio! · Abonar ${totalFormatted} € al repartidor (efectivo o tarjeta)`;
     } else {
       subjectPrefix = isOnlinePay ? '¡Pedido confirmado y pagado!' : '¡Pedido confirmado! (Pago en el local)';
     }
