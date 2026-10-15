@@ -558,7 +558,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       <span>{metodoPago === 'stripe' ? 'Conectando con Stripe...' : 'Registrando pedido...'}</span>
                     </span>
                   ) : metodoPago === 'stripe' ? (
-                    <span>Pagar con Tarjeta en Stripe · {fmt(finalPrice)} →</span>
+                    <span style={{ color: '#ffffff', fontWeight: 'bold' }}>Pagar con tarjeta</span>
                   ) : (
                     <span>{tipoEntrega === 'domicilio' ? `Confirmar Pedido a Domicilio (${fmt(finalPrice)})` : `Confirmar Pedido Takeaway (${fmt(finalPrice)})`}</span>
                   )}

@@ -4452,6 +4452,13 @@ img {
   padding: 14px;
   font-size: 15px;
   cursor: pointer;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.checkout-submit-btn span {
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .btn-loading-state {
