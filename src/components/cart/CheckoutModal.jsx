@@ -309,7 +309,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       <span className="modalidad-slot-tag takeaway">En Local</span>
                     </div>
                     <p className="pickup-info-address">
-                      <strong>Restaurante Obento:</strong> Calle Amargura 3, 30830 La Ñora, Murcia
+                      <strong>Obento Sushi:</strong> Calle Amargura 3, 30830 La Ñora, Murcia
                     </p>
                     <div className="pickup-badges-row">
                       <span className="pickup-badge-item">⏱️ Preparación ~35-45 min</span>
@@ -491,7 +491,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       <div className="payment-card-content">
                         <div className="payment-card-top">
                           <span className="payment-title">
-                            {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en el Restaurante'}
+                            {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en local'}
                           </span>
                           <span className="payment-badge-local">
                             {tipoEntrega === 'domicilio' ? 'En la Entrega' : 'Al Recoger'}
@@ -561,7 +561,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     <span style={{ color: '#ffffff', fontWeight: 'bold' }}>Pagar con tarjeta</span>
                   ) : (
                     <span style={{ color: '#ffffff', fontWeight: 'bold' }}>
-                      {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en Restaurante'}
+                      {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en local'}
                     </span>
                   )}
                 </button>
