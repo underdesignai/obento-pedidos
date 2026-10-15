@@ -245,6 +245,10 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
       return res.status(400).json({ error: 'La dirección de entrega es obligatoria para pedidos a domicilio.' });
     }
 
+    if (tipo_entrega === 'domicilio' && Number(total) < 25) {
+      return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+    }
+
     const payload = {
       cliente_nombre: sanitizeInput(cliente_nombre, 80),
       cliente_telefono: sanitizeInput(cliente_telefono, 25),
@@ -367,6 +371,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
       return res.status(400).json({ error: 'El carrito no tiene productos.' });
     }
 
+    if (tipo_entrega === 'domicilio' && Number(total) < 25) {
+      return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+    }
+
     // 1) Registrar pedido en estado 'pendiente' en la base de datos
     let pedido;
     const payload = {
@@ -486,7 +494,6 @@ app.get('/api/pedidos/verify-session/:sessionId', async (req, res) => {
         pedidoActualizado = pedidosEnMemoria.find(p => p.id == lookup || p.numero_pedido === lookup);
         if (pedidoActualizado) {
           pedidoActualizado.estado_pago = 'pagado';
-          pedidoActualizado.estado_pedido = 'preparando';
         }
       }
 
@@ -621,12 +628,6 @@ app.patch('/api/pedidos/:id/status', verifyStaffOrDelivery, async (req, res) => 
 
     try {
       const pedido = await actualizarEstadoPedidoDb(cleanId, cleanEstado, { repartidor_nombre: cleanRepartidor });
-      if (cleanEstado === 'listo' && pedido?.cliente_email) {
-        const pedidoCompleto = (await obtenerPedidoPorIdDb(pedido.id || cleanId)) || pedido;
-        sendOrderReadyEmail(pedido.cliente_email, pedidoCompleto).catch((err) => {
-          console.error('Error enviando email de pedido listo:', err.message);
-        });
-      }
       return res.json({ success: true, pedido });
     } catch {
       const pMem = pedidosEnMemoria.find(p => p.id == cleanId || p.numero_pedido === cleanId);
@@ -639,9 +640,6 @@ app.patch('/api/pedidos/:id/status', verifyStaffOrDelivery, async (req, res) => 
           pMem.fecha_entregado = new Date().toISOString();
           const start = new Date(pMem.fecha_salida_reparto || pMem.created_at || Date.now()).getTime();
           pMem.tiempo_entrega_minutos = Math.round((Date.now() - start) / 60000);
-        }
-        if (cleanEstado === 'listo' && pMem.cliente_email) {
-          sendOrderReadyEmail(pMem.cliente_email, pMem).catch(() => {});
         }
         return res.json({ success: true, pedido: pMem });
       }

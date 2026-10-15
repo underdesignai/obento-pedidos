@@ -51,6 +51,8 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const isBajoMinimoDomicilio = tipoEntrega === 'domicilio' && finalPrice < 25;
+
   if (!isCheckoutOpen) return null;
 
   // Formateadores automáticos de tarjeta
@@ -76,6 +78,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (tipoEntrega === 'domicilio' && finalPrice < 25) {
+      setErrorMsg('El pedido mínimo para entrega a domicilio es de 25,00 €.');
+      return;
+    }
 
     if (!nombre.trim() || !telefono.trim()) {
       setErrorMsg('Por favor introduce tu nombre y un teléfono de contacto.');
@@ -403,6 +410,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     disabled={loading}
                   />
                 </div>
+
+                {/* Aviso Legal sobre Alimentos Perecederos (Art. 103 d TRLGDCU) - Al final de la columna izquierda */}
+                <div className="checkout-food-notice" style={{ marginTop: '14px', marginBottom: 0, padding: '8px 12px', fontSize: '11px' }}>
+                  <span>⚠️ <strong>Aviso al consumidor:</strong> Elaboración artesanal perecedera para consumo inmediato (Art. 103 d TRLGDCU). Sin desistimiento tras inicio del cocinado.</span>
+                </div>
               </div>
             </div>
 
@@ -539,16 +551,48 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   </p>
                 </div>
 
-                {/* Aviso Legal sobre Alimentos Perecederos (Art. 103 d TRLGDCU) */}
-                <div className="checkout-food-notice" style={{ marginBottom: '10px', padding: '8px 12px', fontSize: '11px' }}>
-                  <span>⚠️ <strong>Aviso al consumidor:</strong> Elaboración artesanal perecedera para consumo inmediato (Art. 103 d TRLGDCU). Sin desistimiento tras inicio del cocinado.</span>
-                </div>
+                {/* Aviso Pedido Mínimo a Domicilio (25€) */}
+                {tipoEntrega === 'domicilio' && (
+                  <div
+                    style={{
+                      marginBottom: '10px',
+                      padding: '9px 12px',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      background: isBajoMinimoDomicilio ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.12)',
+                      border: isBajoMinimoDomicilio ? '1px solid rgba(239, 68, 68, 0.45)' : '1px solid rgba(34, 197, 94, 0.35)',
+                      color: isBajoMinimoDomicilio ? '#fca5a5' : '#86efac',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                      <span>{isBajoMinimoDomicilio ? '⚠️' : '✓'}</span>
+                      <span>Pedido mínimo a domicilio: 25,00 €</span>
+                    </span>
+                    <span style={{ fontWeight: 700 }}>
+                      {isBajoMinimoDomicilio
+                        ? `Faltan ${(25 - finalPrice).toFixed(2).replace('.', ',')} €`
+                        : '¡Alcanzado!'}
+                    </span>
+                  </div>
+                )}
 
                 <button
                   type="submit"
-                  className="btn-primary btn-block checkout-submit-btn"
-                  disabled={loading}
-                  style={{ padding: '14px', width: '100%', marginBottom: '6px' }}
+                  className={`btn-primary btn-block checkout-submit-btn ${isBajoMinimoDomicilio ? 'disabled' : ''}`}
+                  disabled={loading || isBajoMinimoDomicilio}
+                  style={{
+                    padding: '14px',
+                    width: '100%',
+                    marginBottom: '6px',
+                    opacity: isBajoMinimoDomicilio ? 0.45 : 1,
+                    cursor: isBajoMinimoDomicilio ? 'not-allowed' : 'pointer',
+                    filter: isBajoMinimoDomicilio ? 'grayscale(0.6)' : 'none',
+                    transition: 'all 0.2s'
+                  }}
                 >
                   {loading ? (
                     <span className="btn-loading-state">
@@ -558,10 +602,10 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       <span>{metodoPago === 'stripe' ? 'Conectando con Stripe...' : 'Registrando pedido...'}</span>
                     </span>
                   ) : metodoPago === 'stripe' ? (
-                    <span style={{ color: '#ffffff', fontWeight: 'bold' }}>Pagar con tarjeta</span>
+                    <span style={{ color: '#ffffff', fontWeight: 'bold', letterSpacing: '0.04em' }}>PAGAR CON TARJETA</span>
                   ) : (
-                    <span style={{ color: '#ffffff', fontWeight: 'bold' }}>
-                      {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en local'}
+                    <span style={{ color: '#ffffff', fontWeight: 'bold', letterSpacing: '0.04em' }}>
+                      {tipoEntrega === 'domicilio' ? 'PAGAR AL REPARTIDOR' : 'PAGAR EN LOCAL'}
                     </span>
                   )}
                 </button>
