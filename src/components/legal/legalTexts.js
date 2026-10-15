@@ -131,7 +131,7 @@ Asimismo, si considera que sus derechos han sido vulnerados, tiene derecho a pre
         heading: '1. Procedimiento de Contratación Online',
         content: `Para tramitar un pedido a través de nuestro Sitio Web, el Usuario debe seguir estos sencillos pasos:
 1. Seleccionar los platos deseados de la carta interactiva y añadirlos a la cesta.
-2. Acceder al carrito y pulsar "Tramitar Pedido" o "Pagar".
+2. Acceder al carrito y pulsar "Finaliza Pedido" o "Pagar".
 3. Elegir la modalidad de entrega: **Takeaway (Recogida en local)** o **Reparto a Domicilio**.
 4. Facilitar los datos de contacto y la hora prevista de recogida o dirección de entrega.
 5. Seleccionar el método de pago disponible.

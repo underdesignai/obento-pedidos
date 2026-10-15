@@ -250,7 +250,7 @@ export default function CartDrawer() {
               className="btn-primary btn-block cart-checkout-btn"
               onClick={handleProceedToCheckout}
             >
-              <span>Tramitar Pedido</span>
+              <span>Finaliza Pedido</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="btn-ico-svg">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
