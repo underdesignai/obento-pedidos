@@ -181,7 +181,12 @@ export async function sendOrderConfirmedEmail(to, data) {
   if (!to) return;
   const { transporter, from: emailFrom } = await getTransporter();
 
-  const trackingUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/seguimiento?id=${data.numero_pedido}`;
+  const baseUrl = (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'))
+    ? process.env.CLIENT_URL.replace(/\/$/, '')
+    : 'https://pedidos.obentojapanesefood.es';
+  const trackingUrl = data.numero_pedido 
+    ? `${baseUrl}/seguimiento?id=${data.numero_pedido}`
+    : `${baseUrl}/seguimiento`;
 
   const html = baseEmailLayout(`
     <div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
@@ -252,7 +257,12 @@ export async function sendOrderReadyEmail(to, data) {
   if (!to) return;
   const { transporter, from: emailFrom } = await getTransporter();
 
-  const trackingUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/seguimiento?id=${data.numero_pedido}`;
+  const baseUrl = (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost'))
+    ? process.env.CLIENT_URL.replace(/\/$/, '')
+    : 'https://pedidos.obentojapanesefood.es';
+  const trackingUrl = data.numero_pedido 
+    ? `${baseUrl}/seguimiento?id=${data.numero_pedido}`
+    : `${baseUrl}/seguimiento`;
 
   const html = baseEmailLayout(`
     <div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);color:#22c55e;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
