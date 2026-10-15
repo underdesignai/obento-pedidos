@@ -560,7 +560,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   ) : metodoPago === 'stripe' ? (
                     <span style={{ color: '#ffffff', fontWeight: 'bold' }}>Pagar con tarjeta</span>
                   ) : (
-                    <span>{tipoEntrega === 'domicilio' ? `Confirmar Pedido a Domicilio (${fmt(finalPrice)})` : `Confirmar Pedido Takeaway (${fmt(finalPrice)})`}</span>
+                    <span style={{ color: '#ffffff', fontWeight: 'bold' }}>
+                      {tipoEntrega === 'domicilio' ? 'Pagar al repartidor' : 'Pagar en restaurante'}
+                    </span>
                   )}
                 </button>
 
