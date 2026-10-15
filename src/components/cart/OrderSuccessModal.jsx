@@ -42,9 +42,14 @@ export default function OrderSuccessModal({ order, onClose }) {
             <strong style={{ color: '#fff', display: 'block', marginBottom: '2px' }}>
               En lista de preparación en cocina
             </strong>
-            {isPagado
-              ? 'Hemos verificado tu pago online. La comanda ya está en marcha en los fogones de Obento.'
-              : 'Tu comanda ha entrado a cocina y se cobrará en el momento de la entrega.'}
+            {isPagado ? (
+              'Hemos verificado tu pago online. La comanda ya está en marcha en los fogones de Obento.'
+            ) : (
+              <>
+                Tu comanda ya está en marcha en cocina. El importe total de{' '}
+                <strong style={{ color: '#fbbf24', fontWeight: 800 }}>{fmt(order.total)}</strong> se abonará al recoger tu pedido en el local (en efectivo o con tarjeta).
+              </>
+            )}
           </div>
         </div>
 
@@ -64,7 +69,11 @@ export default function OrderSuccessModal({ order, onClose }) {
           }}>
             <span style={{ fontSize: '16px' }}>✉️</span>
             <div>
-              Te hemos enviado un correo a <strong style={{ color: '#fff' }}>{order.cliente_email}</strong> confirmando que tu pedido ha sido pagado y está en preparación.
+              {isPagado ? (
+                <>Te hemos enviado un correo a <strong style={{ color: '#fff' }}>{order.cliente_email}</strong> confirmando que tu pedido ha sido pagado y está en preparación.</>
+              ) : (
+                <>Te hemos enviado un correo a <strong style={{ color: '#fff' }}>{order.cliente_email}</strong> con los detalles de tu comanda y recogida en el local.</>
+              )}
             </div>
           </div>
         )}

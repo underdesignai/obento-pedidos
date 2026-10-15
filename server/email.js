@@ -189,15 +189,38 @@ export async function sendOrderConfirmedEmail(to, data) {
     ? `${baseUrl}/seguimiento?id=${data.numero_pedido}`
     : `${baseUrl}/seguimiento`;
 
+  const isOnlinePay = data.metodo_pago === 'stripe' || data.estado_pago === 'pagado';
+  const totalFormatted = Number(data.total || 0).toFixed(2).replace('.', ',');
+
+  const badgeHtml = isOnlinePay
+    ? `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+        🟢 Pedido Confirmado & Pagado
+      </div>`
+    : `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#fbbf24;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+        🟠 Pedido Confirmado · Pago en el local
+      </div>`;
+
+  const introText = isOnlinePay
+    ? `Hemos recibido tu pedido correctamente. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos del día.`
+    : `Tu comanda ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará al recoger tu pedido en el local (en efectivo o con tarjeta).`;
+
+  const paymentDetailLine = isOnlinePay
+    ? `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+        💳 <strong>Método de pago:</strong> <span style="color:#4ade80;">Pagado con tarjeta online</span>
+      </div>`
+    : `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+        💵 <strong>Método de pago:</strong> <span style="color:#fbbf24;font-weight:bold;">Abonar ${totalFormatted} € al recoger (efectivo o tarjeta)</span>
+      </div>`;
+
+  const totalLabel = isOnlinePay ? 'Total abonado:' : 'Total a abonar en el local:';
+
   const html = baseEmailLayout(`
-    <div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
-      🟢 Pedido Confirmado & Pagado
-    </div>
+    ${badgeHtml}
     <h1 style="font-size:24px;color:#f3ede0;margin:0 0 10px;font-weight:800;">
       ¡Gracias por tu pedido, ${data.cliente_nombre}! 🍣
     </h1>
     <p style="color:#d1d5db;font-size:15px;line-height:1.5;margin:0 0 22px;">
-      Hemos recibido tu pedido correctamente. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos del día.
+      ${introText}
     </p>
 
     <!-- Caja del Pedido -->
@@ -212,6 +235,7 @@ export async function sendOrderConfirmedEmail(to, data) {
       <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
         📍 <strong>Lugar de recogida:</strong> <span style="color:#f3ede0;">Obento Sushi: Calle Amargura 3, 30830 La Ñora, Murcia</span>
       </div>
+      ${paymentDetailLine}
     </div>
 
     <!-- Botón de Seguimiento en Vivo -->
@@ -228,8 +252,8 @@ export async function sendOrderConfirmedEmail(to, data) {
     ${itemsTableHtml(data.items)}
 
     <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;border-top:2px solid rgba(255,255,255,0.1);">
-      <span style="font-size:16px;font-weight:700;color:#f3ede0;">Total abonado:</span>
-      <span style="font-size:22px;font-weight:900;color:#c81e22;font-family:monospace;">${Number(data.total).toFixed(2).replace('.', ',')} €</span>
+      <span style="font-size:16px;font-weight:700;color:#f3ede0;">${totalLabel}</span>
+      <span style="font-size:22px;font-weight:900;color:${isOnlinePay ? '#c81e22' : '#fbbf24'};font-family:monospace;">${totalFormatted} €</span>
     </div>
   `);
 
@@ -239,10 +263,11 @@ export async function sendOrderConfirmedEmail(to, data) {
   }
 
   try {
+    const subjectPrefix = isOnlinePay ? '¡Pedido confirmado y pagado!' : '¡Pedido confirmado! (Pago en el local)';
     await transporter.sendMail({
       from: emailFrom,
       to,
-      subject: `¡Pedido confirmado! · ${data.numero_pedido} · OBENTO Japanese Food`,
+      subject: `${subjectPrefix} · ${data.numero_pedido} · OBENTO Japanese Food`,
       html
     });
     console.log(`✉️ Email de confirmación enviado con éxito a ${to} para el pedido ${data.numero_pedido}`);
