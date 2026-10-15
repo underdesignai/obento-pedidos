@@ -5,7 +5,7 @@ function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
 }
 
-const PASOS = [
+const PASOS_RECOGIDA = [
   {
     key: 'recibido',
     title: 'Pedido Recibido',
@@ -28,6 +28,33 @@ const PASOS = [
     key: 'entregado',
     title: 'Entregado',
     sub: '¡Que disfrutes tu experiencia Obento!',
+    icon: '🥢',
+  }
+];
+
+const PASOS_DOMICILIO = [
+  {
+    key: 'recibido',
+    title: 'Pedido Recibido',
+    sub: 'Confirmado y registrado en cocina',
+    icon: '📝',
+  },
+  {
+    key: 'preparando',
+    title: 'En Cocina',
+    sub: 'Elaborando tus platos frescos al momento',
+    icon: '👨‍🍳',
+  },
+  {
+    key: 'en_camino',
+    title: 'En Reparto',
+    sub: 'El repartidor va de camino a tu domicilio',
+    icon: '🛵',
+  },
+  {
+    key: 'entregado',
+    title: 'Entregado',
+    sub: '¡Entregado en tu puerta! Buen provecho',
     icon: '🥢',
   }
 ];
@@ -68,7 +95,7 @@ export default function TrackingPage() {
     }
   }, [idFromUrl]);
 
-  // Polling automático cada 4 segundos para actualizar el estado en vivo cuando cocina cambie
+  // Polling automático cada 4 segundos para actualizar el estado en vivo cuando cocina o repartidor cambie
   useEffect(() => {
     if (!pedidoId || !pedido) return;
     if (pedido.estado_pedido === 'entregado') return; // ya completado
@@ -88,28 +115,53 @@ export default function TrackingPage() {
     }
   };
 
+  const isDelivery = pedido ? (pedido.tipo_entrega === 'domicilio' || pedido.tipo_entrega === 'delivery') : false;
+  const pasos = isDelivery ? PASOS_DOMICILIO : PASOS_RECOGIDA;
+
   // Calcular índice del paso actual
   const getStepIndex = (estado) => {
-    switch (estado) {
-      case 'recibido':
-      case 'nuevo':
-      case 'pendiente':
-        return 0;
-      case 'preparando':
-      case 'en_preparacion':
-        return 1;
-      case 'listo':
-        return 2;
-      case 'entregado':
-        return 3;
-      default:
-        return 0;
+    if (isDelivery) {
+      switch (estado) {
+        case 'recibido':
+        case 'nuevo':
+        case 'pendiente':
+          return 0;
+        case 'preparando':
+        case 'en_preparacion':
+        case 'listo':
+        case 'listo_reparto':
+          return 1;
+        case 'en_camino':
+          return 2;
+        case 'entregado':
+          return 3;
+        default:
+          return 0;
+      }
+    } else {
+      switch (estado) {
+        case 'recibido':
+        case 'nuevo':
+        case 'pendiente':
+          return 0;
+        case 'preparando':
+        case 'en_preparacion':
+          return 1;
+        case 'listo':
+        case 'listo_reparto':
+          return 2;
+        case 'entregado':
+          return 3;
+        default:
+          return 0;
+      }
     }
   };
 
   const currentIndex = pedido ? getStepIndex(pedido.estado_pedido) : 0;
-  const isListo = pedido?.estado_pedido === 'listo';
-  const isEntregado = pedido?.estado_pedido === 'entregado';
+  const isEnCamino = isDelivery && pedido?.estado_pedido === 'en_camino';
+  const isListoReparto = isDelivery && (pedido?.estado_pedido === 'listo' || pedido?.estado_pedido === 'listo_reparto');
+  const isListoRecogida = !isDelivery && (pedido?.estado_pedido === 'listo' || pedido?.estado_pedido === 'listo_reparto');
 
   return (
     <div className="tracking-page-wrapper">
@@ -127,10 +179,14 @@ export default function TrackingPage() {
       <main className="tracking-main-container">
         {/* Buscador de pedido si entra directo */}
         <div className="tracking-search-card">
-          <span className="tracking-eyebrow">SEGUIMIENTO EN DIRECTO</span>
-          <h1 className="tracking-title">Estado de tu Pedido Takeaway</h1>
+          <span className="tracking-eyebrow">
+            {isDelivery ? 'SEGUIMIENTO DE ENTREGA A DOMICILIO' : 'SEGUIMIENTO EN DIRECTO'}
+          </span>
+          <h1 className="tracking-title">
+            {isDelivery ? 'Estado de tu Pedido a Domicilio' : 'Estado de tu Pedido'}
+          </h1>
           <p className="tracking-desc">
-            Introduce tu número de referencia para consultar el progreso de cocina en tiempo real.
+            Introduce tu número de referencia para consultar el progreso en tiempo real.
           </p>
 
           <form onSubmit={handleBuscar} className="tracking-input-group">
@@ -155,7 +211,9 @@ export default function TrackingPage() {
             {/* Cabecera del pedido */}
             <div className="tracking-card-top">
               <div>
-                <span className="tracking-order-badge">PEDIDO CONFIRMADO</span>
+                <span className="tracking-order-badge" style={{ background: isDelivery ? 'rgba(168, 85, 247, 0.2)' : 'rgba(200, 30, 34, 0.2)', color: isDelivery ? '#c084fc' : '#c81e22', border: isDelivery ? '1px solid rgba(168, 85, 247, 0.4)' : '1px solid rgba(200, 30, 34, 0.4)' }}>
+                  {isDelivery ? '🛵 ENTREGA A DOMICILIO' : '🥡 RECOGIDA EN LOCAL'}
+                </span>
                 <h2 className="tracking-order-number">{pedido.numero_pedido}</h2>
                 <div className="tracking-order-client">
                   Cliente: <strong>{pedido.cliente_nombre}</strong>
@@ -163,7 +221,9 @@ export default function TrackingPage() {
               </div>
               <div className="tracking-top-right">
                 <div className={`tracking-pago-pill ${pedido.estado_pago === 'pagado' ? 'pagado' : 'pendiente'}`}>
-                  {pedido.estado_pago === 'pagado' ? '🟢 Pagado con tarjeta' : '🟠 Pago en local'}
+                  {pedido.estado_pago === 'pagado'
+                    ? '🟢 Pagado con tarjeta'
+                    : (isDelivery ? '🟠 Pago al repartidor (efectivo/tarjeta)' : '🟠 Pago en local')}
                 </div>
                 <div className="tracking-sync-time">
                   Actualizado en directo · {lastCheck.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
@@ -171,8 +231,57 @@ export default function TrackingPage() {
               </div>
             </div>
 
-            {/* Aviso destacado cuando está listo */}
-            {isListo && (
+            {/* Aviso destacado cuando el repartidor VA DE CAMINO */}
+            {isEnCamino && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(200, 30, 34, 0.15) 100%)',
+                border: '1.5px solid rgba(168, 85, 247, 0.6)',
+                borderRadius: '12px',
+                padding: '1.25rem 1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.25rem',
+                boxShadow: '0 8px 24px rgba(168, 85, 247, 0.25)',
+                margin: '1.5rem 0'
+              }}>
+                <div style={{ fontSize: '2.5rem' }}>🛵</div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#c084fc', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    ¡TU PEDIDO VA EN CAMINO A TU DOMICILIO!
+                  </h3>
+                  <p style={{ margin: '4px 0 0', color: '#e5e7eb', fontSize: '0.92rem', lineHeight: 1.4 }}>
+                    {pedido.repartidor_nombre ? <strong>{pedido.repartidor_nombre}</strong> : 'Nuestro repartidor'} acaba de salir con tu comida recién hecha en bolsa térmica. Estará en tu puerta en unos 15 - 25 minutos.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Aviso cuando está empaquetado para salir a reparto */}
+            {isListoReparto && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.18) 0%, rgba(200, 30, 34, 0.1) 100%)',
+                border: '1.5px solid rgba(234, 179, 8, 0.5)',
+                borderRadius: '12px',
+                padding: '1.25rem 1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.25rem',
+                margin: '1.5rem 0'
+              }}>
+                <div style={{ fontSize: '2.5rem' }}>🍱</div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fbbf24', fontWeight: 900, textTransform: 'uppercase' }}>
+                    ¡PLATOS LISTOS Y EMPAQUETADOS!
+                  </h3>
+                  <p style={{ margin: '4px 0 0', color: '#e5e7eb', fontSize: '0.92rem' }}>
+                    Tus platos están recién preparados en bolsa térmica esperando la salida inmediata del repartidor.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Aviso destacado cuando está listo para recoger en local */}
+            {isListoRecogida && (
               <div className="tracking-ready-banner">
                 <div className="ready-banner-icon">🍣</div>
                 <div>
@@ -189,12 +298,12 @@ export default function TrackingPage() {
               <div className="timeline-track">
                 <div
                   className="timeline-progress-bar"
-                  style={{ width: `${(currentIndex / (PASOS.length - 1)) * 100}%` }}
+                  style={{ width: `${(currentIndex / (pasos.length - 1)) * 100}%` }}
                 />
               </div>
 
               <div className="timeline-steps-grid">
-                {PASOS.map((paso, idx) => {
+                {pasos.map((paso, idx) => {
                   const done = idx < currentIndex;
                   const active = idx === currentIndex;
                   return (
@@ -213,21 +322,58 @@ export default function TrackingPage() {
               </div>
             </div>
 
-            {/* Detalles de recogida y horario */}
+            {/* Cuadro destacado de Pago al Repartidor si está pendiente */}
+            {isDelivery && pedido.estado_pago !== 'pagado' && (
+              <div style={{
+                background: 'rgba(251, 191, 36, 0.1)',
+                border: '2px solid rgba(251, 191, 36, 0.4)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                margin: '20px 0',
+                textAlign: 'center'
+              }}>
+                <div style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '12px', background: '#fbbf24', color: '#0d0d12', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
+                  💵 Pago pendiente al repartidor
+                </div>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#fbbf24', fontFamily: 'monospace' }}>
+                  {fmt(pedido.total)}
+                </div>
+                <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#f3ede0', fontWeight: 600 }}>
+                  Puedes abonar en <span style={{ color: '#fbbf24' }}>EFECTIVO</span> o con <span style={{ color: '#fbbf24' }}>TARJETA</span> (datáfono) directamente al repartidor al recibir tu pedido.
+                </p>
+                <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#9ca3af' }}>
+                  Por favor ten preparado el importe exacto o tu tarjeta para agilizar la entrega en tu puerta.
+                </p>
+              </div>
+            )}
+
+            {/* Detalles de entrega o recogida */}
             <div className="tracking-pickup-details">
               <div className="pickup-box">
-                <div className="pickup-icon">📍</div>
+                <div className="pickup-icon">{isDelivery ? '🛵' : '📍'}</div>
                 <div>
-                  <strong>Punto de recogida:</strong>
-                  <p>Calle Amargura, 3, 30830 La Ñora (Murcia)</p>
+                  <strong>{isDelivery ? 'Dirección de entrega:' : 'Punto de recogida:'}</strong>
+                  {isDelivery ? (
+                    <p>
+                      <span style={{ fontWeight: 600, color: '#f3ede0' }}>{pedido.direccion_entrega || 'Dirección indicada en el pedido'}</span>
+                      {pedido.direccion_detalles && <span style={{ display: 'block', fontSize: '0.85em', color: '#9ca3af' }}>({pedido.direccion_detalles})</span>}
+                      {pedido.codigo_postal && <span style={{ display: 'block', fontSize: '0.85em', color: '#9ca3af' }}>C.P. {pedido.codigo_postal}</span>}
+                    </p>
+                  ) : (
+                    <p>Calle Amargura, 3, 30830 La Ñora (Murcia)</p>
+                  )}
                 </div>
               </div>
 
               <div className="pickup-box">
-                <div className="pickup-icon">🕐</div>
+                <div className="pickup-icon">{isDelivery ? '⏱️' : '🕐'}</div>
                 <div>
-                  <strong>Hora estimada de recogida:</strong>
-                  <p className="pickup-time-val">{pedido.hora_recogida || 'Lo antes posible (~35-45 min)'}</p>
+                  <strong>{isDelivery ? 'Tiempo estimado de entrega:' : 'Hora estimada de recogida:'}</strong>
+                  <p className="pickup-time-val">
+                    {isDelivery
+                      ? (pedido.estado_pedido === 'en_camino' ? '15 - 25 min (Repartidor en camino)' : (pedido.hora_recogida || 'Lo antes posible (~35-45 min)'))
+                      : (pedido.hora_recogida || 'Lo antes posible (~25-35 min)')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -253,7 +399,7 @@ export default function TrackingPage() {
                 </div>
 
                 <div className="tracking-total-row">
-                  <span>Importe Total</span>
+                  <span>{isDelivery && pedido.estado_pago !== 'pagado' ? 'Total a abonar al repartidor' : 'Importe Total'}</span>
                   <span className="tracking-total-amount">{fmt(pedido.total)}</span>
                 </div>
               </div>
