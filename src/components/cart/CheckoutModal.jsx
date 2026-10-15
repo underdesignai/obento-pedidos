@@ -233,7 +233,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     }}
                   >
                     <span style={{ fontSize: '20px', lineHeight: 1 }}>🥡</span>
-                    <span style={{ fontWeight: 700, fontSize: '13px' }}>Recogida en Tienda</span>
+                    <span style={{ fontWeight: 700, fontSize: '13px' }}>Recogida en local</span>
                     <span style={{ fontSize: '11px', color: '#a0998f' }}>Calle Amargura 3, La Ñora</span>
                   </button>
 

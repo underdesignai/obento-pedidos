@@ -82,7 +82,7 @@ export const ABOUT_INFO = {
   ],
   direccion: 'C. Amargura, 3',
   ciudad: '30830 La Ñora, Murcia',
-  horario1: 'Recoger en tienda: miércoles a domingo',
+  horario1: 'Recoger en local: miércoles a domingo',
   horario2: '18:00–23:30',
   horarioLlevar1: 'Para llevar: miércoles a domingo',
   horarioLlevar2: '20:00–23:30',
