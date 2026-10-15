@@ -43,7 +43,7 @@ export default function OrderSuccessModal({ order, onClose }) {
               En lista de preparación en cocina
             </strong>
             {isPagado
-              ? 'Hemos verificado el pago oficial de Stripe. La comanda ya está en marcha en los fogones de Obento.'
+              ? 'Hemos verificado tu pago online. La comanda ya está en marcha en los fogones de Obento.'
               : 'Tu comanda ha entrado a cocina y se cobrará en el momento de la entrega.'}
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function OrderSuccessModal({ order, onClose }) {
             <div className="ticket-label">NÚMERO DE PEDIDO</div>
             <div className="ticket-number">{order.numero_pedido}</div>
             <div className="ticket-badge-state">
-              {isPagado ? '🟢 Pagado con tarjeta (Stripe)' : isDomicilio ? '🟠 Pagar al repartidor en efectivo' : '🟠 Pagar al recoger en el local'}
+              {isPagado ? '🟢 Pagado con tarjeta' : isDomicilio ? '🟠 Pagar al repartidor' : '🟠 Pagar en el local'}
             </div>
           </div>
 
@@ -96,22 +96,6 @@ export default function OrderSuccessModal({ order, onClose }) {
               <span className="detail-val total">{fmt(order.total)}</span>
             </div>
           </div>
-
-          {Array.isArray(order.items) && order.items.length > 0 && (
-            <div className="ticket-items-list">
-              <div className="ticket-items-title">Platos incluidos:</div>
-              {order.items.map((it, idx) => (
-                <div key={idx} className="ticket-item-row">
-                  <span>
-                    <strong>{it.cantidad}x</strong> {it.nombre}
-                    {it.porcion && ` (${it.porcion} uds)`}
-                    {it.opcion && ` - ${it.opcion}`}
-                  </span>
-                  <span>{fmt(it.subtotal || (it.precio_unitario * it.cantidad) || 0)}</span>
-                </div>
-              ))}
-            </div>
-          )}
 
           <div className="ticket-instructions">
             <div className="instruction-icon">{isDomicilio ? '🛵' : '📍'}</div>
