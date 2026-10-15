@@ -280,10 +280,16 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
       pedidosEnMemoria.unshift(pedidoGuardado);
     }
 
+    if (pedidoGuardado && pedidoGuardado.cliente_email) {
+      sendOrderConfirmedEmail(pedidoGuardado.cliente_email, pedidoGuardado)
+        .then(() => console.log(`✉️ Email de confirmación enviado a ${pedidoGuardado.cliente_email} para pedido ${pedidoGuardado.numero_pedido}`))
+        .catch(err => console.error(`⚠️ Error al enviar email de pedido a ${pedidoGuardado.cliente_email}:`, err.message));
+    }
+
     res.status(201).json({
       success: true,
       pedido: pedidoGuardado,
-       mensaje: 'Pedido registrado con éxito.'
+      mensaje: 'Pedido registrado con éxito.'
     });
   } catch (error) {
     console.error('Error al registrar pedido:', error);
@@ -432,11 +438,11 @@ app.post('/api/create-checkout-session', async (req, res) => {
       }
     });
 
-    // Guardar session_id en PostgreSQL
+    // Guardar stripe_session_id en PostgreSQL
     try {
-      await actualizarEstadoPagoDb(pedido.id, 'pendiente', session.id);
+      await pool.query('UPDATE pedidos SET stripe_session_id = $1 WHERE id = $2', [session.id, pedido.id]);
     } catch (e) {
-      // ignore
+      console.warn('⚠️ Error al asociar stripe_session_id al pedido:', e.message);
     }
 
     res.json({
@@ -466,26 +472,45 @@ app.get('/api/pedidos/verify-session/:sessionId', async (req, res) => {
 
     const session = await activeStripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status === 'paid') {
-      const pedidoId = session.metadata?.pedido_id;
-      let pedidoActualizado;
+      const pedidoId = session.metadata?.pedido_id || req.query.pedido_id;
+      const numeroPedido = session.metadata?.numero_pedido || req.query.numero_pedido;
+      const lookup = pedidoId || numeroPedido || sessionId;
+
+      let pedidoActualizado = null;
       try {
-        await actualizarEstadoPagoDb(pedidoId, 'pagado', session.payment_intent);
-        pedidoActualizado = await obtenerPedidoPorIdDb(pedidoId);
+        await actualizarEstadoPagoDb(lookup, 'pagado', session.payment_intent);
+        pedidoActualizado = await obtenerPedidoPorIdDb(lookup);
       } catch (dbErr) {
-        pedidoActualizado = pedidosEnMemoria.find(p => p.id == pedidoId || p.numero_pedido === session.metadata?.numero_pedido);
+        console.error('⚠️ Error al actualizar pago en DB:', dbErr.message);
+        pedidoActualizado = pedidosEnMemoria.find(p => p.id == lookup || p.numero_pedido === lookup);
         if (pedidoActualizado) {
           pedidoActualizado.estado_pago = 'pagado';
           pedidoActualizado.estado_pedido = 'preparando';
         }
       }
 
+      if (!pedidoActualizado && (numeroPedido || pedidoId)) {
+        try {
+          pedidoActualizado = await obtenerPedidoPorIdDb(numeroPedido || pedidoId);
+        } catch {
+          // ignore
+        }
+      }
+
       // Enviar correo de confirmación de pago oficial
       if (pedidoActualizado && pedidoActualizado.cliente_email) {
-        sendOrderConfirmedEmail(pedidoActualizado.cliente_email, pedidoActualizado).catch(() => {});
+        console.log(`✉️ Iniciando envío de email de confirmación a ${pedidoActualizado.cliente_email} para pedido ${pedidoActualizado.numero_pedido}...`);
+        sendOrderConfirmedEmail(pedidoActualizado.cliente_email, pedidoActualizado)
+          .then(() => console.log(`✅ Email de confirmación entregado con éxito a ${pedidoActualizado.cliente_email}`))
+          .catch(err => console.error('❌ Error al enviar email de confirmación:', err));
+      } else {
+        console.warn('⚠️ No se pudo enviar email de confirmación: pedido o email no encontrado.', { lookup, pedidoActualizado });
       }
 
       return res.json({ success: true, pagado: true, pedido: pedidoActualizado });
     }
+
+    return res.json({ success: true, pagado: false });
   } catch (error) {
     console.error('Error al verificar sesión de Stripe:', error);
     res.status(500).json({ error: 'Error al verificar sesión de pago.' });

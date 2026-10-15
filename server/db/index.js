@@ -339,22 +339,33 @@ export async function obtenerHistorialDeliveryDb() {
 
 // Actualizar estado de pago (ej: cuando Stripe confirma el cobro)
 export async function actualizarEstadoPagoDb(idOrSessionId, nuevoEstadoPago, stripePaymentIntentId = null) {
-  const sql = `
-    UPDATE pedidos
-    SET estado_pago = $1,
-        estado_pedido = CASE WHEN $1 = 'pagado' AND (estado_pedido IS NULL OR estado_pedido = 'recibido' OR estado_pedido = 'pendiente') THEN 'preparando' ELSE estado_pedido END,
-        stripe_payment_intent_id = COALESCE($2, stripe_payment_intent_id),
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = $3::integer OR stripe_session_id = $3::text OR numero_pedido = $3::text
-    RETURNING *;
-  `;
-  const res = await pool.query(sql, [nuevoEstadoPago, stripePaymentIntentId, idOrSessionId]);
+  const isNumeric = /^\d+$/.test(String(idOrSessionId || ''));
+  const sql = isNumeric
+    ? `
+      UPDATE pedidos
+      SET estado_pago = $1::varchar,
+          estado_pedido = CASE WHEN $1::varchar = 'pagado' AND (estado_pedido IS NULL OR estado_pedido = 'recibido' OR estado_pedido = 'pendiente') THEN 'preparando' ELSE estado_pedido END,
+          stripe_payment_intent_id = COALESCE($2::varchar, stripe_payment_intent_id),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $3::integer OR numero_pedido = $3::varchar
+      RETURNING *;
+    `
+    : `
+      UPDATE pedidos
+      SET estado_pago = $1::varchar,
+          estado_pedido = CASE WHEN $1::varchar = 'pagado' AND (estado_pedido IS NULL OR estado_pedido = 'recibido' OR estado_pedido = 'pendiente') THEN 'preparando' ELSE estado_pedido END,
+          stripe_payment_intent_id = COALESCE($2::varchar, stripe_payment_intent_id),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE stripe_session_id = $3::varchar OR numero_pedido = $3::varchar
+      RETURNING *;
+    `;
+  const res = await pool.query(sql, [nuevoEstadoPago, stripePaymentIntentId, String(idOrSessionId)]);
   return res.rows[0];
 }
 
 // Obtener un pedido específico por ID o Número de pedido
 export async function obtenerPedidoPorIdDb(idOrNumero) {
-  const isNumeric = /^\d+$/.test(idOrNumero);
+  const isNumeric = /^\d+$/.test(String(idOrNumero || ''));
   const sql = `
     SELECT 
       p.*,
@@ -377,10 +388,10 @@ export async function obtenerPedidoPorIdDb(idOrNumero) {
       ) AS items
     FROM pedidos p
     LEFT JOIN pedido_items pi ON p.id = pi.pedido_id
-    WHERE ${isNumeric ? 'p.id = $1 OR p.numero_pedido = $1' : 'p.numero_pedido = $1'}
+    WHERE ${isNumeric ? 'p.id = $1::integer OR p.numero_pedido = $1::varchar' : 'p.numero_pedido = $1::varchar'}
     GROUP BY p.id
   `;
-  const res = await pool.query(sql, [idOrNumero]);
+  const res = await pool.query(sql, [String(idOrNumero)]);
   return res.rows[0] || null;
 }
 
