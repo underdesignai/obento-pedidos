@@ -189,30 +189,86 @@ export async function sendOrderConfirmedEmail(to, data) {
     ? `${baseUrl}/seguimiento?id=${data.numero_pedido}`
     : `${baseUrl}/seguimiento`;
 
+  const isDelivery = data.tipo_entrega === 'domicilio';
   const isOnlinePay = data.metodo_pago === 'stripe' || data.estado_pago === 'pagado';
   const totalFormatted = Number(data.total || 0).toFixed(2).replace('.', ',');
 
-  const badgeHtml = isOnlinePay
-    ? `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
-        🟢 Pedido Confirmado & Pagado
-      </div>`
-    : `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#fbbf24;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
-        🟠 Pedido Confirmado · Pago en el local
-      </div>`;
+  let badgeHtml = '';
+  let introText = '';
+  let deliveryDetailsHtml = '';
+  let paymentDetailLine = '';
+  let totalLabel = '';
 
-  const introText = isOnlinePay
-    ? `Hemos recibido tu pedido correctamente. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos del día.`
-    : `Tu comanda ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará al recoger tu pedido en el local (en efectivo o con tarjeta).`;
+  if (isDelivery) {
+    badgeHtml = isOnlinePay
+      ? `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+          🟢 Pedido a Domicilio · Pagado Online
+        </div>`
+      : `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#fbbf24;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+          🟠 Pedido a Domicilio · Pago al Repartidor
+        </div>`;
 
-  const paymentDetailLine = isOnlinePay
-    ? `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
-        💳 <strong>Método de pago:</strong> <span style="color:#4ade80;">Pagado con tarjeta online</span>
-      </div>`
-    : `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
-        💵 <strong>Método de pago:</strong> <span style="color:#fbbf24;font-weight:bold;">Abonar ${totalFormatted} € al recoger (efectivo o tarjeta)</span>
-      </div>`;
+    introText = isOnlinePay
+      ? `Hemos recibido tu pedido a domicilio correctamente y tu pago con tarjeta ha sido confirmado. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos. Te enviaremos un correo en cuanto nuestro repartidor salga hacia tu puerta.`
+      : `Tu comanda a domicilio ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará en efectivo al repartidor al recibir el pedido.`;
 
-  const totalLabel = isOnlinePay ? 'Total abonado:' : 'Total a abonar en el local:';
+    deliveryDetailsHtml = `
+      <div style="font-size:13px;color:#d1d5db;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:6px;">
+        🛵 <strong>Tipo de entrega:</strong> <span style="color:#f3ede0;">Entrega a domicilio</span>
+      </div>
+      <div style="font-size:13px;color:#d1d5db;margin-top:6px;line-height:1.4;">
+        📍 <strong>Dirección de entrega:</strong> <br/>
+        <span style="color:#f3ede0;font-weight:600;">${data.direccion_entrega || 'Dirección indicada en el pedido'}</span>
+        ${data.direccion_detalles ? `<br/><span style="color:#9ca3af;font-size:12px;">(${data.direccion_detalles})</span>` : ''}
+        ${data.codigo_postal ? `<br/><span style="color:#9ca3af;font-size:12px;">C.P. ${data.codigo_postal}</span>` : ''}
+      </div>
+      <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+        ⏱️ <strong>Tiempo estimado de entrega:</strong> <span style="color:#4ade80;font-weight:bold;">30 - 45 minutos aprox.</span>
+      </div>
+    `;
+
+    paymentDetailLine = isOnlinePay
+      ? `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+          💳 <strong>Método de pago:</strong> <span style="color:#4ade80;font-weight:bold;">Pagado online con tarjeta (Stripe)</span>
+        </div>`
+      : `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+          💵 <strong>Método de pago:</strong> <span style="color:#fbbf24;font-weight:bold;">Abonar ${totalFormatted} € al repartidor (efectivo)</span>
+        </div>`;
+
+    totalLabel = isOnlinePay ? 'Total abonado:' : 'Total a pagar al repartidor:';
+  } else {
+    // Recogida en local (Takeaway)
+    badgeHtml = isOnlinePay
+      ? `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+          🟢 Pedido Confirmado & Pagado
+        </div>`
+      : `<div style="display:inline-block;padding:5px 12px;border-radius:20px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#fbbf24;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">
+          🟠 Pedido Confirmado · Pago en el local
+        </div>`;
+
+    introText = isOnlinePay
+      ? `Hemos recibido tu pedido correctamente. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos del día.`
+      : `Tu comanda ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará al recoger tu pedido en el local (en efectivo o con tarjeta).`;
+
+    deliveryDetailsHtml = `
+      <div style="font-size:13px;color:#d1d5db;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:6px;">
+        🕐 <strong>Hora estimada de recogida:</strong> <span style="color:#f3ede0;">${data.hora_recogida || 'Lo antes posible (~25-35 min)'}</span>
+      </div>
+      <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+        📍 <strong>Lugar de recogida:</strong> <span style="color:#f3ede0;">Obento Sushi: Calle Amargura 3, 30830 La Ñora, Murcia</span>
+      </div>
+    `;
+
+    paymentDetailLine = isOnlinePay
+      ? `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+          💳 <strong>Método de pago:</strong> <span style="color:#4ade80;">Pagado con tarjeta online</span>
+        </div>`
+      : `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+          💵 <strong>Método de pago:</strong> <span style="color:#fbbf24;font-weight:bold;">Abonar ${totalFormatted} € al recoger (efectivo o tarjeta)</span>
+        </div>`;
+
+    totalLabel = isOnlinePay ? 'Total abonado:' : 'Total a abonar en el local:';
+  }
 
   const html = baseEmailLayout(`
     ${badgeHtml}
@@ -229,12 +285,7 @@ export async function sendOrderConfirmedEmail(to, data) {
         <span style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.15em;">NÚMERO DE PEDIDO</span>
         <span style="font-family:monospace;font-size:24px;font-weight:900;color:#c81e22;letter-spacing:0.05em;">${data.numero_pedido}</span>
       </div>
-      <div style="font-size:13px;color:#d1d5db;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:6px;">
-        🕐 <strong>Hora estimada de recogida:</strong> <span style="color:#f3ede0;">${data.hora_recogida || 'Lo antes posible (~25-35 min)'}</span>
-      </div>
-      <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
-        📍 <strong>Lugar de recogida:</strong> <span style="color:#f3ede0;">Obento Sushi: Calle Amargura 3, 30830 La Ñora, Murcia</span>
-      </div>
+      ${deliveryDetailsHtml}
       ${paymentDetailLine}
     </div>
 
@@ -263,7 +314,12 @@ export async function sendOrderConfirmedEmail(to, data) {
   }
 
   try {
-    const subjectPrefix = isOnlinePay ? '¡Pedido confirmado y pagado!' : '¡Pedido confirmado! (Pago en el local)';
+    let subjectPrefix = '¡Pedido confirmado!';
+    if (isDelivery) {
+      subjectPrefix = isOnlinePay ? '🛵 ¡Pedido a domicilio confirmado y pagado!' : '🛵 ¡Pedido a domicilio confirmado!';
+    } else {
+      subjectPrefix = isOnlinePay ? '¡Pedido confirmado y pagado!' : '¡Pedido confirmado! (Pago en el local)';
+    }
     await transporter.sendMail({
       from: emailFrom,
       to,
