@@ -20,14 +20,14 @@ export const SUSHI_SUBCATEGORIES = [
 export const PLACEHOLDER_IMG = "/images/placeholder.webp";
 
 export const MENU = [
-  { id: '42', cat: 'bebidas', nombre: "Coca-Cola", descripcion: "", precio: 2.20, alergenos: [] },
-  { id: '43', cat: 'bebidas', nombre: "Coca-Cola Zero", descripcion: "", precio: 2.20, alergenos: [] },
-  { id: '44', cat: 'bebidas', nombre: "Aquarius", descripcion: "", precio: 2.20, alergenos: [] },
-  { id: '45', cat: 'bebidas', nombre: "Fanta Naranja", descripcion: "", precio: 2.20, alergenos: [] },
-  { id: '46', cat: 'bebidas', nombre: "Nestea", descripcion: "", precio: 2.20, alergenos: [] },
-  { id: '47', cat: 'bebidas', nombre: "Cerveza Asahi", descripcion: "", precio: 3.50, alergenos: ["gluten"] },
-  { id: '48', cat: 'bebidas', nombre: "Cerveza Kirin", descripcion: "", precio: 3.50, alergenos: ["gluten"] },
-  { id: '49', cat: 'bebidas', nombre: "Agua pequeña", descripcion: "", precio: 1.20, alergenos: [] },
+  { id: '42', cat: 'bebidas', nombre: "Coca-Cola", descripcion: "", precio: 2.20, imagen: "/images/cocacolaoriginal.webp", alergenos: [] },
+  { id: '43', cat: 'bebidas', nombre: "Coca-Cola Zero", descripcion: "", precio: 2.20, imagen: "/images/cocacolazero.webp", alergenos: [] },
+  { id: '44', cat: 'bebidas', nombre: "Aquarius", descripcion: "", precio: 2.20, imagen: "/images/aquarius.webp", alergenos: [] },
+  { id: '45', cat: 'bebidas', nombre: "Fanta Naranja", descripcion: "", precio: 2.20, imagen: "/images/fantanaranja.webp", alergenos: [] },
+  { id: '46', cat: 'bebidas', nombre: "Nestea", descripcion: "", precio: 2.20, imagen: "/images/nestea.webp", alergenos: [] },
+  { id: '47', cat: 'bebidas', nombre: "Cerveza Asahi", descripcion: "", precio: 3.50, imagen: "/images/asahi.webp", alergenos: ["gluten"] },
+  { id: '48', cat: 'bebidas', nombre: "Cerveza Kirin", descripcion: "", precio: 3.50, imagen: "/images/kirin.webp", alergenos: ["gluten"] },
+  { id: '49', cat: 'bebidas', nombre: "Agua pequeña", descripcion: "", precio: 1.20, imagen: "/images/agua.webp", alergenos: [] },
   { id: '34', cat: 'calientes', nombre: "Arroz con ternera", descripcion: "Arroz salteado con ternera, zanahoria, pimiento verde, pimiento rojo, cebolla, espárrago y pepino.", precio: 12.50, imagen: "/images/arrozternera.webp", alergenos: ["soja"] },
   { id: '35', cat: 'calientes', nombre: "Arroz con pollo", descripcion: "Arroz salteado con pollo, zanahoria, pimiento verde, pimiento rojo, cebolla, espárrago y pepino.", precio: 11.20, imagen: "/images/arrozpollo.webp", alergenos: ["soja"] },
   { id: '36', cat: 'calientes', nombre: "Yakisoba de langostino", descripcion: "Fideos salteados con langostino, col, aceite de sésamo, pepino y soja.", precio: 13.20, imagen: "/images/yakisobalangostino.webp", alergenos: ["gluten","crustaceos","soja","sesamo"] },
