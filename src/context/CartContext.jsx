@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { trackAddToCart, trackCartView, trackCheckoutOpen } from '../utils/analytics';
+import AvisoPedidosDesactivadosModal from '../components/cart/AvisoPedidosDesactivadosModal';
 
 const CartContext = createContext();
 
@@ -16,6 +17,31 @@ export function CartProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
+  // Estado de la tienda (activo / pedidos desactivados)
+  const [tiendaEstado, setTiendaEstado] = useState({
+    activo: true,
+    mensaje: 'Pedidos online desactivados temporalmente. Para realizar su pedido, por favor contacte directamente por WhatsApp o por teléfono al 613 927 596.',
+    whatsapp: '34613927596'
+  });
+  const [avisoDesactivadoOpen, setAvisoDesactivadoOpen] = useState(false);
+  const [ultimoPlatoIntentado, setUltimoPlatoIntentado] = useState(null);
+
+  useEffect(() => {
+    const fetchEstado = () => {
+      fetch('/api/tienda/estado')
+        .then((r) => r.json())
+        .then((data) => {
+          if (data && typeof data.activo === 'boolean') {
+            setTiendaEstado(data);
+          }
+        })
+        .catch(() => {});
+    };
+    fetchEstado();
+    const interval = setInterval(fetchEstado, 20000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem('obento_cart', JSON.stringify(cart));
@@ -30,6 +56,13 @@ export function CartProvider({ children }) {
   };
 
   const addToCart = (dish, portion = null, opcion = null, cantidad = 1) => {
+    // Si los pedidos están desactivados, mostrar de inmediato el aviso con el botón de WhatsApp
+    if (!tiendaEstado.activo) {
+      setUltimoPlatoIntentado({ dish, portion, opcion, cantidad });
+      setAvisoDesactivadoOpen(true);
+      return;
+    }
+
     const key = getItemKey(dish.id, portion?.cant, opcion?.label);
     const unitPrice = portion ? portion.precio : dish.precio;
 
@@ -190,10 +223,21 @@ export function CartProvider({ children }) {
         isCartOpen,
         setIsCartOpen: handleSetIsCartOpen,
         isCheckoutOpen,
-        setIsCheckoutOpen: handleSetIsCheckoutOpen
+        setIsCheckoutOpen: handleSetIsCheckoutOpen,
+        tiendaEstado,
+        avisoDesactivadoOpen,
+        setAvisoDesactivadoOpen,
+        ultimoPlatoIntentado
       }}
     >
       {children}
+      {avisoDesactivadoOpen && (
+        <AvisoPedidosDesactivadosModal
+          tiendaEstado={tiendaEstado}
+          platoIntentado={ultimoPlatoIntentado}
+          onClose={() => setAvisoDesactivadoOpen(false)}
+        />
+      )}
     </CartContext.Provider>
   );
 }
