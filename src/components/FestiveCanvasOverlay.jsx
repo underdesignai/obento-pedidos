@@ -17,11 +17,18 @@ export default function FestiveCanvasOverlay() {
 
     let animationFrameId;
     let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
     const handleResize = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+      const spiderPositions = width < 768 ? [width * 0.10] : [width * 0.11, width * 0.89];
+      let spIdx = 0;
+      particles.forEach((p) => {
+        if (p.type === 'hanging_spider') {
+          if (spIdx < spiderPositions.length) {
+            p.anchorX = spiderPositions[spIdx++];
+          }
+        }
+      });
     };
     window.addEventListener('resize', handleResize);
 
@@ -68,12 +75,16 @@ export default function FestiveCanvasOverlay() {
         });
       }
 
-      // 3. Arañas colgantes (2 arañas grandes, ampliadas un 300%)
+      // 3. Arañas colgantes (desplazadas hacia los laterales para no interferir con logo ni texto central)
       const spiderCount = width < 768 ? 1 : 2;
+      const spiderPositions = width < 768
+        ? [width * 0.10]
+        : [width * 0.11, width * 0.89];
+
       for (let i = 0; i < spiderCount; i++) {
         particles.push({
           type: 'hanging_spider',
-          anchorX: (width / (spiderCount + 1)) * (i + 1) + (Math.random() - 0.5) * 40,
+          anchorX: spiderPositions[i],
           currentLength: Math.random() * 80 + 40,
           targetLength: Math.random() * (height * 0.38) + 80,
           minLength: 35,
