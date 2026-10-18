@@ -344,7 +344,6 @@ export async function actualizarEstadoPagoDb(idOrSessionId, nuevoEstadoPago, str
     ? `
       UPDATE pedidos
       SET estado_pago = $1::varchar,
-          estado_pedido = CASE WHEN $1::varchar = 'pagado' AND (estado_pedido IS NULL OR estado_pedido = 'recibido' OR estado_pedido = 'pendiente') THEN 'preparando' ELSE estado_pedido END,
           stripe_payment_intent_id = COALESCE($2::varchar, stripe_payment_intent_id),
           updated_at = CURRENT_TIMESTAMP
       WHERE id = $3::integer OR numero_pedido = $3::varchar
@@ -353,7 +352,6 @@ export async function actualizarEstadoPagoDb(idOrSessionId, nuevoEstadoPago, str
     : `
       UPDATE pedidos
       SET estado_pago = $1::varchar,
-          estado_pedido = CASE WHEN $1::varchar = 'pagado' AND (estado_pedido IS NULL OR estado_pedido = 'recibido' OR estado_pedido = 'pendiente') THEN 'preparando' ELSE estado_pedido END,
           stripe_payment_intent_id = COALESCE($2::varchar, stripe_payment_intent_id),
           updated_at = CURRENT_TIMESTAMP
       WHERE stripe_session_id = $3::varchar OR numero_pedido = $3::varchar
