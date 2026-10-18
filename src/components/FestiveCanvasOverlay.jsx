@@ -313,11 +313,9 @@ export default function FestiveCanvasOverlay() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Telarañas estacionales en todas las 4 esquinas de la web (Halloween)
+      // Telarañas estacionales SOLO en esquina superior izquierda e inferior derecha (Halloween)
       if (themeConfig.theme === 'halloween') {
         drawCornerWeb(0, 0, 1, 1); // Esquina superior izquierda
-        drawCornerWeb(width, 0, -1, 1); // Esquina superior derecha
-        drawCornerWeb(0, height, 1, -1); // Esquina inferior izquierda
         drawCornerWeb(width, height, -1, -1); // Esquina inferior derecha
       }
 
