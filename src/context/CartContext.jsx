@@ -87,6 +87,13 @@ export function CartProvider({ children }) {
       }
     });
 
+    // Disparar celebración temática si procede
+    try {
+      window.dispatchEvent(new CustomEvent('obento_cart_celebration', {
+        detail: { x: window.innerWidth * 0.8, y: window.innerHeight * 0.9 }
+      }));
+    } catch (_) {}
+
     // Registrar evento de añadido al carrito
     setTimeout(() => {
       const itemsCount = cart.reduce((sum, item) => sum + item.cantidad, 0) + cantidad;

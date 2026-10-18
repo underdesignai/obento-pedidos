@@ -636,3 +636,36 @@ export async function obtenerEstadoTiendaDb() {
   }
 }
 
+// Obtener configuración de temas festivos y animaciones
+export async function obtenerThemeConfigDb() {
+  const DEFAULT_THEME_CONFIG = {
+    theme: "normal",
+    intensity: "subtle",
+    active: false,
+    cartCelebration: true,
+    floatingBadges: true,
+    seasonalSpecials: false,
+    schedule: {
+      halloween: { start: "10-24", end: "11-02", enabled: false },
+      navidad: { start: "12-15", end: "12-28", enabled: false },
+      ano_nuevo: { start: "12-29", end: "01-02", enabled: false },
+      reyes: { start: "01-03", end: "01-07", enabled: false },
+    },
+  };
+
+  try {
+    const res = await pool.query(
+      `SELECT valor FROM configuracion WHERE clave = 'theme_config'`
+    );
+    if (res.rows.length > 0 && res.rows[0].valor) {
+      const parsed = JSON.parse(res.rows[0].valor);
+      return { ...DEFAULT_THEME_CONFIG, ...parsed };
+    }
+    return DEFAULT_THEME_CONFIG;
+  } catch (err) {
+    console.warn('⚠️ Error al obtener theme_config de BBDD:', err.message);
+    return DEFAULT_THEME_CONFIG;
+  }
+}
+
+

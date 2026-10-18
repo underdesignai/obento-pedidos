@@ -5,8 +5,9 @@ import TrackingPage from './pages/TrackingPage';
 import DeliveryPage from './pages/DeliveryPage';
 import InstallPrompt from './components/InstallPrompt';
 import CookieBanner from './components/legal/CookieBanner';
-import LegalModal from './components/legal/LegalModal';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider } from './context/ThemeContext';
+import FestiveCanvasOverlay from './components/FestiveCanvasOverlay';
 import { trackPageView } from './utils/analytics';
 
 function PageTracker() {
@@ -38,28 +39,31 @@ export default function App() {
   }, []);
 
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <InstallPrompt />
-        <PageTracker />
-        <Routes>
-          {/* La raíz de esta aplicación es directamente la carta interactiva de pedidos */}
-          <Route path="/" element={<PedidosPage />} />
-          <Route path="/pedidos" element={<PedidosPage />} />
-          <Route path="/seguimiento" element={<TrackingPage />} />
-          <Route path="/tracking" element={<TrackingPage />} />
-          <Route path="/delivery" element={<DeliveryPage />} />
-          <Route path="/reparto" element={<DeliveryPage />} />
-          {/* Fallback a pedidos */}
-          <Route path="*" element={<PedidosPage />} />
-        </Routes>
-        <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
-        <LegalModal
-          isOpen={isLegalOpen}
-          initialTab={legalTab}
-          onClose={() => setIsLegalOpen(false)}
-        />
-      </BrowserRouter>
-    </CartProvider>
+    <ThemeProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <FestiveCanvasOverlay />
+          <InstallPrompt />
+          <PageTracker />
+          <Routes>
+            {/* La raíz de esta aplicación es directamente la carta interactiva de pedidos */}
+            <Route path="/" element={<PedidosPage />} />
+            <Route path="/pedidos" element={<PedidosPage />} />
+            <Route path="/seguimiento" element={<TrackingPage />} />
+            <Route path="/tracking" element={<TrackingPage />} />
+            <Route path="/delivery" element={<DeliveryPage />} />
+            <Route path="/reparto" element={<DeliveryPage />} />
+            {/* Fallback a pedidos */}
+            <Route path="*" element={<PedidosPage />} />
+          </Routes>
+          <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
+          <LegalModal
+            isOpen={isLegalOpen}
+            initialTab={legalTab}
+            onClose={() => setIsLegalOpen(false)}
+          />
+        </BrowserRouter>
+      </CartProvider>
+    </ThemeProvider>
   );
 }

@@ -23,7 +23,8 @@ import {
   obtenerBotWebConfigDb,
   obtenerStripeConfigDb,
   obtenerHistorialDeliveryDb,
-  obtenerEstadoTiendaDb
+  obtenerEstadoTiendaDb,
+  obtenerThemeConfigDb
 } from './db/index.js';
 import { sendOrderConfirmedEmail, sendOrderReadyEmail } from './email.js';
 
@@ -178,6 +179,18 @@ app.get('/api/bots-web', async (req, res) => {
   } catch (err) {
     console.error('Error al obtener /api/bots-web:', err);
     res.status(500).json({ error: 'Error al obtener configuración del bot' });
+  }
+});
+
+// CONFIGURACIÓN DE TEMA ESTACIONAL Y ANIMACIONES (Sincronizado con el Dashboard)
+app.get('/api/config/theme', async (req, res) => {
+  try {
+    const config = await obtenerThemeConfigDb();
+    res.setHeader('Cache-Control', 'public, max-age=15');
+    res.json(config);
+  } catch (err) {
+    console.error('Error al obtener /api/config/theme:', err);
+    res.status(500).json({ error: 'Error al obtener configuración del tema' });
   }
 });
 
