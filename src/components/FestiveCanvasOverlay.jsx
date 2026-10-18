@@ -17,6 +17,7 @@ export default function FestiveCanvasOverlay() {
 
     let animationFrameId;
     let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
     const handleResize = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
