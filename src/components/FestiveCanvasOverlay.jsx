@@ -68,21 +68,21 @@ export default function FestiveCanvasOverlay() {
         });
       }
 
-      // 3. Arañas colgantes (solo 2 discretas)
+      // 3. Arañas colgantes (2 arañas grandes, ampliadas un 300%)
       const spiderCount = width < 768 ? 1 : 2;
       for (let i = 0; i < spiderCount; i++) {
         particles.push({
           type: 'hanging_spider',
           anchorX: (width / (spiderCount + 1)) * (i + 1) + (Math.random() - 0.5) * 40,
-          currentLength: Math.random() * 80 + 30,
-          targetLength: Math.random() * (height * 0.35) + 60,
-          minLength: 25,
-          maxLength: Math.random() * (height * 0.45) + 80,
+          currentLength: Math.random() * 80 + 40,
+          targetLength: Math.random() * (height * 0.38) + 80,
+          minLength: 35,
+          maxLength: Math.random() * (height * 0.48) + 100,
           descending: true,
           speed: Math.random() * 0.35 + 0.15,
           swingAngle: 0,
           swingSpeed: 0.015 + Math.random() * 0.01,
-          size: Math.random() * 1.5 + 4.5,
+          size: (Math.random() * 1.5 + 4.5) * 3, // +300% de tamaño
         });
       }
     } else if (themeConfig.theme === 'navidad') {
@@ -152,17 +152,16 @@ export default function FestiveCanvasOverlay() {
     };
     window.addEventListener('obento_cart_celebration', handleCelebration);
 
-    // Helper: Dibujar telaraña fina de esquina
+    // Helper: Dibujar telaraña idéntica al diseño con radios, curvas colgantes y nudos
     const drawCornerWeb = (originX, originY, radX, radY) => {
       ctx.save();
-      ctx.strokeStyle = 'rgba(230, 210, 255, 0.22)';
-      ctx.lineWidth = 1;
+      const spokes = 7;
+      const rings = 5;
+      const webRadius = Math.min(width * 0.22, 160);
 
-      const spokes = 6;
-      const rings = 4;
-      const webRadius = Math.min(width * 0.16, 120);
-
-      // Líneas radiales
+      // 1. Líneas radiales principales (radios)
+      ctx.strokeStyle = 'rgba(235, 230, 245, 0.45)';
+      ctx.lineWidth = 1.1;
       for (let i = 0; i <= spokes; i++) {
         const angle = (Math.PI / 2 / spokes) * i;
         const targetX = originX + Math.cos(angle) * webRadius * radX;
@@ -173,26 +172,43 @@ export default function FestiveCanvasOverlay() {
         ctx.stroke();
       }
 
-      // Arcos concéntricos con curvatura
+      // 2. Anillos transversales curvados hacia el centro (hilos colgantes) con nudos
+      ctx.strokeStyle = 'rgba(230, 225, 240, 0.4)';
+      ctx.lineWidth = 0.95;
+
       for (let r = 1; r <= rings; r++) {
-        const currentDist = (webRadius / rings) * r;
-        ctx.beginPath();
-        for (let i = 0; i <= spokes; i++) {
-          const angle = (Math.PI / 2 / spokes) * i;
-          const px = originX + Math.cos(angle) * currentDist * radX;
-          const py = originY + Math.sin(angle) * currentDist * radY;
-          if (i === 0) {
-            ctx.moveTo(px, py);
-          } else {
-            const prevAngle = (Math.PI / 2 / spokes) * (i - 1);
-            const midAngle = (prevAngle + angle) / 2;
-            const sagDist = currentDist * 0.88;
-            const cx = originX + Math.cos(midAngle) * sagDist * radX;
-            const cy = originY + Math.sin(midAngle) * sagDist * radY;
-            ctx.quadraticCurveTo(cx, cy, px, py);
+        const progress = Math.pow(r / rings, 0.88);
+        const currentDist = webRadius * progress;
+
+        for (let i = 0; i < spokes; i++) {
+          const a1 = (Math.PI / 2 / spokes) * i;
+          const a2 = (Math.PI / 2 / spokes) * (i + 1);
+          const p1x = originX + Math.cos(a1) * currentDist * radX;
+          const p1y = originY + Math.sin(a1) * currentDist * radY;
+          const p2x = originX + Math.cos(a2) * currentDist * radX;
+          const p2y = originY + Math.sin(a2) * currentDist * radY;
+
+          const midAngle = (a1 + a2) / 2;
+          const sagDist = currentDist * 0.82;
+          const cx = originX + Math.cos(midAngle) * sagDist * radX;
+          const cy = originY + Math.sin(midAngle) * sagDist * radY;
+
+          ctx.beginPath();
+          ctx.moveTo(p1x, p1y);
+          ctx.quadraticCurveTo(cx, cy, p2x, p2y);
+          ctx.stroke();
+
+          // Nudos en las intersecciones como en la foto
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.beginPath();
+          ctx.arc(p1x, p1y, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+          if (i === spokes - 1) {
+            ctx.beginPath();
+            ctx.arc(p2x, p2y, 1.2, 0, Math.PI * 2);
+            ctx.fill();
           }
         }
-        ctx.stroke();
       }
       ctx.restore();
     };
@@ -236,35 +252,35 @@ export default function FestiveCanvasOverlay() {
       ctx.restore();
     };
 
-    // Helper: Dibujar araña colgante
+    // Helper: Dibujar araña colgante blanca
     const drawSpider = (anchorX, currentLength, swingAngle, size) => {
       const spiderX = anchorX + Math.sin(swingAngle) * 15;
       const spiderY = currentLength;
 
       ctx.save();
-      // Hilo de seda
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-      ctx.lineWidth = 0.8;
+      // Hilo de seda blanco/plata brillante
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
       ctx.moveTo(anchorX, 0);
       ctx.lineTo(spiderX, spiderY);
       ctx.stroke();
 
-      // Cuerpo de araña
+      // Cuerpo de araña blanca / espectral (+300% de tamaño)
       ctx.translate(spiderX, spiderY);
-      ctx.fillStyle = 'rgba(22, 18, 26, 0.9)';
-      // Abdomen
+      // Abdomen blanco aperlado con sombra suave
+      ctx.fillStyle = 'rgba(245, 245, 250, 0.96)';
       ctx.beginPath();
       ctx.arc(0, size * 0.4, size * 0.6, 0, Math.PI * 2);
       ctx.fill();
-      // Cefalotórax
+      // Cefalotórax blanco
       ctx.beginPath();
       ctx.arc(0, -size * 0.2, size * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      // 8 Patas arqueadas
-      ctx.strokeStyle = 'rgba(25, 20, 30, 0.85)';
-      ctx.lineWidth = 1.1;
+      // 8 Patas arqueadas blancas bien visibles
+      ctx.strokeStyle = 'rgba(240, 240, 248, 0.95)';
+      ctx.lineWidth = 2.4;
       const legOffsets = [-0.4, -0.1, 0.2, 0.5];
       legOffsets.forEach((off, idx) => {
         // Pata izquierda
@@ -279,11 +295,16 @@ export default function FestiveCanvasOverlay() {
         ctx.stroke();
       });
 
-      // Detalle rojo en espalda estilo viuda negra
-      ctx.fillStyle = 'rgba(220, 30, 40, 0.8)';
+      // Marca en la espalda: detalle naranja / rojo calabaza
+      ctx.fillStyle = 'rgba(255, 117, 24, 0.95)';
       ctx.beginPath();
-      ctx.arc(0, size * 0.35, size * 0.18, 0, Math.PI * 2);
+      ctx.arc(0, size * 0.38, size * 0.2, 0, Math.PI * 2);
       ctx.fill();
+
+      // Ojos diminutos rojos intimidantes
+      ctx.fillStyle = 'rgba(255, 30, 30, 0.95)';
+      ctx.fillRect(-3, -size * 0.28, 2.5, 2.5);
+      ctx.fillRect(1, -size * 0.28, 2.5, 2.5);
 
       ctx.restore();
     };
@@ -292,12 +313,11 @@ export default function FestiveCanvasOverlay() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Telarañas estacionales en las 4 esquinas (solo en Halloween)
+      // Telarañas estacionales en las 3 esquinas de la web (Halloween)
       if (themeConfig.theme === 'halloween') {
         drawCornerWeb(0, 0, 1, 1); // Esquina superior izquierda
         drawCornerWeb(width, 0, -1, 1); // Esquina superior derecha
         drawCornerWeb(0, height, 1, -1); // Esquina inferior izquierda
-        drawCornerWeb(width, height, -1, -1); // Esquina inferior derecha
       }
 
       // Dibujar partículas normales de fondo
