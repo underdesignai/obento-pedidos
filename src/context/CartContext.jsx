@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { trackAddToCart, trackCartView, trackCheckoutOpen } from '../utils/analytics';
-import AvisoPedidosDesactivadosModal from '../components/cart/AvisoPedidosDesactivadosModal';
 
 const CartContext = createContext();
 
@@ -23,8 +22,6 @@ export function CartProvider({ children }) {
     mensaje: 'Pedidos online desactivados temporalmente. Para realizar su pedido, por favor contacte directamente por WhatsApp o por teléfono al 613 927 596.',
     whatsapp: '34613927596'
   });
-  const [avisoDesactivadoOpen, setAvisoDesactivadoOpen] = useState(false);
-  const [ultimoPlatoIntentado, setUltimoPlatoIntentado] = useState(null);
 
   useEffect(() => {
     const fetchEstado = () => {
@@ -56,13 +53,6 @@ export function CartProvider({ children }) {
   };
 
   const addToCart = (dish, portion = null, opcion = null, cantidad = 1) => {
-    // Si los pedidos están desactivados, mostrar de inmediato el aviso con el botón de WhatsApp
-    if (!tiendaEstado.activo) {
-      setUltimoPlatoIntentado({ dish, portion, opcion, cantidad });
-      setAvisoDesactivadoOpen(true);
-      return;
-    }
-
     const key = getItemKey(dish.id, portion?.cant, opcion?.label);
     const unitPrice = portion ? portion.precio : dish.precio;
 
@@ -224,22 +214,10 @@ export function CartProvider({ children }) {
         setIsCartOpen: handleSetIsCartOpen,
         isCheckoutOpen,
         setIsCheckoutOpen: handleSetIsCheckoutOpen,
-        tiendaEstado,
-        avisoDesactivadoOpen,
-        setAvisoDesactivadoOpen,
-        ultimoPlatoIntentado
+        tiendaEstado
       }}
     >
       {children}
-      {avisoDesactivadoOpen && (
-        <AvisoPedidosDesactivadosModal
-          tiendaEstado={tiendaEstado}
-          platoIntentado={ultimoPlatoIntentado}
-          cart={cart}
-          finalPrice={finalPrice}
-          onClose={() => setAvisoDesactivadoOpen(false)}
-        />
-      )}
     </CartContext.Provider>
   );
 }
