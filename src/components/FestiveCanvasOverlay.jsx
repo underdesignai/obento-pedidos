@@ -155,13 +155,13 @@ export default function FestiveCanvasOverlay() {
     // Helper: Dibujar telaraña idéntica al diseño con radios, curvas colgantes y nudos
     const drawCornerWeb = (originX, originY, radX, radY) => {
       ctx.save();
-      const spokes = 7;
-      const rings = 5;
-      const webRadius = Math.min(width * 0.22, 160);
+      const spokes = 8;
+      const rings = 6;
+      const webRadius = width < 768 ? Math.min(width * 0.36, 160) : Math.min(width * 0.24, 230);
 
       // 1. Líneas radiales principales (radios)
-      ctx.strokeStyle = 'rgba(235, 230, 245, 0.45)';
-      ctx.lineWidth = 1.1;
+      ctx.strokeStyle = 'rgba(245, 245, 255, 0.7)';
+      ctx.lineWidth = 1.4;
       for (let i = 0; i <= spokes; i++) {
         const angle = (Math.PI / 2 / spokes) * i;
         const targetX = originX + Math.cos(angle) * webRadius * radX;
@@ -173,8 +173,8 @@ export default function FestiveCanvasOverlay() {
       }
 
       // 2. Anillos transversales curvados hacia el centro (hilos colgantes) con nudos
-      ctx.strokeStyle = 'rgba(230, 225, 240, 0.4)';
-      ctx.lineWidth = 0.95;
+      ctx.strokeStyle = 'rgba(240, 240, 255, 0.58)';
+      ctx.lineWidth = 1.15;
 
       for (let r = 1; r <= rings; r++) {
         const progress = Math.pow(r / rings, 0.88);
@@ -199,13 +199,13 @@ export default function FestiveCanvasOverlay() {
           ctx.stroke();
 
           // Nudos en las intersecciones como en la foto
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
           ctx.beginPath();
-          ctx.arc(p1x, p1y, 1.2, 0, Math.PI * 2);
+          ctx.arc(p1x, p1y, 1.8, 0, Math.PI * 2);
           ctx.fill();
           if (i === spokes - 1) {
             ctx.beginPath();
-            ctx.arc(p2x, p2y, 1.2, 0, Math.PI * 2);
+            ctx.arc(p2x, p2y, 1.8, 0, Math.PI * 2);
             ctx.fill();
           }
         }
@@ -313,11 +313,12 @@ export default function FestiveCanvasOverlay() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Telarañas estacionales en las 3 esquinas de la web (Halloween)
+      // Telarañas estacionales en todas las 4 esquinas de la web (Halloween)
       if (themeConfig.theme === 'halloween') {
         drawCornerWeb(0, 0, 1, 1); // Esquina superior izquierda
         drawCornerWeb(width, 0, -1, 1); // Esquina superior derecha
         drawCornerWeb(0, height, 1, -1); // Esquina inferior izquierda
+        drawCornerWeb(width, height, -1, -1); // Esquina inferior derecha
       }
 
       // Dibujar partículas normales de fondo
