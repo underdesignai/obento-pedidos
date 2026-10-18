@@ -34,9 +34,9 @@ export function formatWhatsAppOrderMessage(cart = [], finalPrice = 0, platoInten
   }
 
   if (lineas.length > 0) {
-    let msg = '¡Hola Obento! 🍣 Quiero hacer un pedido:\n\n' + lineas.join('\n');
+    let msg = '¡Hola Obento! Quiero hacer un pedido:\n\n' + lineas.join('\n');
     if (finalPrice > 0) {
-      msg += `\n\nTotal estimado: ${Number(finalPrice).toFixed(2).replace('.', ',')}€`;
+      msg += `\n\nTotal: ${Number(finalPrice).toFixed(2).replace('.', ',')}€`;
     }
     return msg;
   }
