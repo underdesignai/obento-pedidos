@@ -517,7 +517,7 @@ img {
 
 .hero-container {
   position: relative;
-  z-index: 1;
+  z-index: 10;
   width: 100%;
   max-width: 1150px;
   padding: 10px 24px 20px;
@@ -8068,3 +8068,78 @@ body.theme-halloween .pedidos-highlight-chip {
     background-attachment: scroll !important;
   }
 }
+
+/* =========================================================
+   CAPAS Y APILAMIENTO - TARJETAS Y BOTONES POR ENCIMA DEL TELÓN FESTIVO
+   Garantiza que todas las tarjetas, contenedores y botones
+   estén siempre por encima de las telarañas del canvas (z-index: 4)
+   ========================================================= */
+.dish-slide,
+.dish-order-card,
+.dish-card,
+.bento-card,
+.bento-card-compact,
+.bento-card-lg,
+.conversion-banner,
+.business-info-card,
+.business-story-card,
+.social-card,
+.pedidos-section-anchor,
+.pedidos-controls-bar,
+.category-meta-header,
+.hero-content,
+.hero-container,
+.hero-badge,
+.hero-actions,
+.full-menu-section .section-container,
+.bento-section .section-container,
+.social-section .section-container,
+.business-section .section-container {
+  position: relative;
+  z-index: 10;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-secondary-outline,
+.btn-add-to-order,
+.btn-order-now,
+.order-qty-selector,
+.cat-nav-btn,
+.sticky-cat-btn,
+.menu-category-btn,
+.nav-cta-btn,
+.allergen-info-btn,
+.slider-arrow,
+.carousel-arrow,
+.social-btn,
+.order-floating-bar,
+.bottom-pay-btn,
+.search-clear-btn {
+  position: relative;
+  z-index: 12;
+}
+
+body.theme-halloween .dish-slide,
+body.theme-halloween .dish-order-card,
+body.theme-halloween .bento-card,
+body.theme-halloween .conversion-banner,
+body.theme-halloween .business-info-card,
+body.theme-halloween .business-story-card,
+body.theme-halloween .social-card,
+body.theme-halloween .hero-container {
+  position: relative;
+  z-index: 10 !important;
+}
+
+body.theme-halloween .btn-primary,
+body.theme-halloween .btn-secondary,
+body.theme-halloween .btn-add-to-order,
+body.theme-halloween .order-qty-selector,
+body.theme-halloween .cat-nav-btn,
+body.theme-halloween .sticky-cat-btn {
+  position: relative;
+  z-index: 12 !important;
+}
+
