@@ -3324,9 +3324,12 @@ img {
 
 /* Hero Banner Pedidos */
 .pedidos-hero-banner {
-  padding: 50px 0 35px;
-  background: radial-gradient(circle at 50% 0%, rgba(200, 30, 34, 0.15) 0%, transparent 70%);
-  border-bottom: 1px solid var(--c-line);
+  padding: 56px 0 42px;
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(200, 30, 34, 0.22) 0%, transparent 70%),
+    linear-gradient(180deg, #181410 0%, #0e0c0a 100%);
+  border-bottom: 1.5px solid rgba(200, 30, 34, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
 .pedidos-hero-content {
@@ -5065,20 +5068,28 @@ img {
   line-height: 1;
 }
 
-/* Secciones de Platos (Lista continua hacia abajo) */
+/* Secciones de Platos (Lista continua hacia abajo con separación nítida) */
 .pedidos-sections-flow {
   display: flex;
   flex-direction: column;
-  gap: 52px;
+  gap: 56px;
 }
 
 .pedidos-section-anchor {
   scroll-margin-top: 118px; /* Offset exacto para barra sticky compacta */
+  padding-bottom: 52px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pedidos-section-anchor:last-child {
+  border-bottom: none;
+  padding-bottom: 20px;
 }
 
 @media (max-width: 768px) {
   .pedidos-section-anchor {
     scroll-margin-top: 100px;
+    padding-bottom: 40px;
   }
 }
 
@@ -5086,9 +5097,11 @@ img {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 1.5px solid var(--c-line);
-  padding-bottom: 12px;
-  margin-bottom: 22px;
+  border-bottom: 2px solid rgba(200, 30, 34, 0.35);
+  background: linear-gradient(90deg, rgba(200, 30, 34, 0.08) 0%, transparent 70%);
+  padding: 12px 14px 14px;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 24px;
   gap: 16px;
 }
 
