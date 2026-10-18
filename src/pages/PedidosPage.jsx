@@ -5,6 +5,7 @@ import CartDrawer from '../components/cart/CartDrawer';
 import CheckoutModal from '../components/cart/CheckoutModal';
 import OrderSuccessModal from '../components/cart/OrderSuccessModal';
 import AllergenModal from '../components/AllergenModal';
+import FestiveBanner from '../components/FestiveBanner';
 import { useCart } from '../context/CartContext';
 
 function fmt(n) {
@@ -260,6 +261,9 @@ export default function PedidosPage() {
 
   return (
     <div className="pedidos-page">
+      {/* Banner Superior Estacional y Festivo */}
+      <FestiveBanner />
+
       {/* Barra de Navegación de Pedidos */}
       <header className="site-header pedidos-header">
         <div className="header-container">

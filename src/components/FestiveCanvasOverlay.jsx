@@ -253,7 +253,7 @@ export default function FestiveCanvasOverlay() {
         width: '100vw',
         height: '100vh',
         pointerEvents: 'none',
-        zIndex: 40,
+        zIndex: 9999,
       }}
     />
   );
