@@ -7,6 +7,7 @@ import OrderSuccessModal from '../components/cart/OrderSuccessModal';
 import AllergenModal from '../components/AllergenModal';
 import FestiveBanner from '../components/FestiveBanner';
 import { useCart } from '../context/CartContext';
+import { useTheme } from '../context/ThemeContext';
 
 function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
@@ -82,6 +83,8 @@ export default function PedidosPage() {
     clearCart,
     tiendaEstado
   } = useCart();
+  const { themeConfig } = useTheme();
+  const isHalloween = themeConfig.active && themeConfig.theme === 'halloween';
 
   const [activeSectionId, setActiveSectionId] = useState('entrantes');
   const [searchQuery, setSearchQuery] = useState('');
@@ -332,11 +335,23 @@ export default function PedidosPage() {
           <div className="pedidos-hero-content">
             <div className="section-eyebrow-dot">
               <span className="dot"></span>
-              <span>Servicio Takeaway · La Ñora (Murcia)</span>
+              <span>{isHalloween ? '🦇 Especial Halloween · La Ñora (Murcia)' : 'Servicio Takeaway · La Ñora (Murcia)'}</span>
             </div>
-            <h1 className="pedidos-hero-title">Haz tu Pedido Online</h1>
+            <h1 className="pedidos-hero-title">
+              {isHalloween ? (
+                <>
+                  El Sushi más <span style={{ color: '#ff7518', textShadow: '0 0 20px rgba(255,117,24,0.45)' }}>Tenebroso</span> de Murcia
+                </>
+              ) : (
+                'Haz tu Pedido Online'
+              )}
+            </h1>
             <p className="pedidos-hero-desc">
-              Toda nuestra carta artesanal preparada al momento. Elige tus platos, personaliza tus porciones y recoge en Calle Amargura, 3 (La Ñora) recién salido de cocina.
+              {isHalloween ? (
+                'Edición especial de Halloween: platos artesanales preparados al momento con el misterio y la esencia más oscura de Japón. ¡Haz tu pedido ahora!'
+              ) : (
+                'Toda nuestra carta artesanal preparada al momento. Elige tus platos, personaliza tus porciones y recoge en Calle Amargura, 3 (La Ñora) recién salido de cocina.'
+              )}
             </p>
 
             <div className="pedidos-highlights-row">

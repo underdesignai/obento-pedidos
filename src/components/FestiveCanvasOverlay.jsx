@@ -31,24 +31,58 @@ export default function FestiveCanvasOverlay() {
 
     // ─── GENERACIÓN DE PARTÍCULAS SEGÚN TEMA ─────────────────────────────
     const particles = [];
-    const count = Math.floor((width < 768 ? 18 : 36) * multiplier);
+    const count = Math.floor((width < 768 ? 16 : 30) * multiplier);
 
     if (themeConfig.theme === 'halloween') {
-      // 1. Hitodama (fuegos fatuos espectrales azulados y naranjas) & Murciélagos origami
+      // 1. Llamas Hitodama espectrales (fuego fatuo japonés)
       for (let i = 0; i < count; i++) {
-        const isBat = Math.random() > 0.75;
         particles.push({
-          type: isBat ? 'bat' : 'hitodama',
+          type: 'hitodama',
           x: Math.random() * width,
           y: Math.random() * height,
           radius: Math.random() * 2.8 + 1.5,
           color: Math.random() > 0.4 ? 'rgba(255, 120, 30,' : 'rgba(80, 210, 255,',
-          alpha: Math.random() * 0.5 + 0.2,
+          alpha: Math.random() * 0.5 + 0.25,
           speedX: (Math.random() - 0.5) * 0.8,
-          speedY: isBat ? Math.random() * 0.5 - 0.8 : -Math.random() * 0.4 - 0.1,
+          speedY: -Math.random() * 0.4 - 0.1,
           oscillation: Math.random() * Math.PI * 2,
           oscSpeed: 0.02 + Math.random() * 0.03,
-          wings: 0,
+        });
+      }
+
+      // 2. Murciélagos de gran vuelo (cruzan la pantalla de un lado a otro)
+      const batCount = Math.max(3, Math.floor((width < 768 ? 4 : 8) * multiplier));
+      for (let i = 0; i < batCount; i++) {
+        const flyRight = Math.random() > 0.5;
+        const speed = (Math.random() * 1.8 + 1.2) * (flyRight ? 1 : -1);
+        particles.push({
+          type: 'flying_bat',
+          x: flyRight ? -50 - Math.random() * 200 : width + 50 + Math.random() * 200,
+          y: Math.random() * (height * 0.65) + 30,
+          speedX: speed,
+          speedY: (Math.random() - 0.5) * 0.5,
+          scale: Math.random() * 0.6 + 0.7,
+          wingPhase: Math.random() * Math.PI * 2,
+          wingSpeed: 0.22 + Math.random() * 0.08,
+          alpha: Math.random() * 0.3 + 0.65,
+        });
+      }
+
+      // 3. Arañas colgantes que descienden en su hilo de seda
+      const spiderCount = Math.max(2, Math.floor((width < 768 ? 3 : 5) * multiplier));
+      for (let i = 0; i < spiderCount; i++) {
+        particles.push({
+          type: 'hanging_spider',
+          anchorX: (width / (spiderCount + 1)) * (i + 1) + (Math.random() - 0.5) * 40,
+          currentLength: Math.random() * 120 + 40,
+          targetLength: Math.random() * (height * 0.45) + 80,
+          minLength: 30,
+          maxLength: Math.random() * (height * 0.55) + 100,
+          descending: true,
+          speed: Math.random() * 0.4 + 0.2,
+          swingAngle: 0,
+          swingSpeed: 0.015 + Math.random() * 0.01,
+          size: Math.random() * 2 + 5,
         });
       }
     } else if (themeConfig.theme === 'navidad') {
@@ -118,9 +152,153 @@ export default function FestiveCanvasOverlay() {
     };
     window.addEventListener('obento_cart_celebration', handleCelebration);
 
+    // Helper: Dibujar telaraña fina de esquina
+    const drawCornerWeb = (originX, originY, radX, radY) => {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(230, 210, 255, 0.22)';
+      ctx.lineWidth = 1;
+
+      const spokes = 6;
+      const rings = 4;
+      const webRadius = Math.min(width * 0.16, 120);
+
+      // Líneas radiales
+      for (let i = 0; i <= spokes; i++) {
+        const angle = (Math.PI / 2 / spokes) * i;
+        const targetX = originX + Math.cos(angle) * webRadius * radX;
+        const targetY = originY + Math.sin(angle) * webRadius * radY;
+        ctx.beginPath();
+        ctx.moveTo(originX, originY);
+        ctx.lineTo(targetX, targetY);
+        ctx.stroke();
+      }
+
+      // Arcos concéntricos con curvatura
+      for (let r = 1; r <= rings; r++) {
+        const currentDist = (webRadius / rings) * r;
+        ctx.beginPath();
+        for (let i = 0; i <= spokes; i++) {
+          const angle = (Math.PI / 2 / spokes) * i;
+          const px = originX + Math.cos(angle) * currentDist * radX;
+          const py = originY + Math.sin(angle) * currentDist * radY;
+          if (i === 0) {
+            ctx.moveTo(px, py);
+          } else {
+            const prevAngle = (Math.PI / 2 / spokes) * (i - 1);
+            const midAngle = (prevAngle + angle) / 2;
+            const sagDist = currentDist * 0.88;
+            const cx = originX + Math.cos(midAngle) * sagDist * radX;
+            const cy = originY + Math.sin(midAngle) * sagDist * radY;
+            ctx.quadraticCurveTo(cx, cy, px, py);
+          }
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    // Helper: Dibujar silueta detallada de murciélago
+    const drawBat = (x, y, scale, wingPhase, flyRight, alpha) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(flyRight ? scale : -scale, scale);
+      ctx.fillStyle = `rgba(18, 14, 22, ${alpha})`;
+      ctx.beginPath();
+
+      // Cabeza y orejas
+      ctx.arc(0, 0, 3, 0, Math.PI * 2);
+      ctx.moveTo(-2, -2);
+      ctx.lineTo(-4, -6);
+      ctx.lineTo(0, -3);
+      ctx.lineTo(4, -6);
+      ctx.lineTo(2, -2);
+
+      // Alas con aleteo fluido
+      const flap = Math.sin(wingPhase) * 7;
+      ctx.moveTo(0, 1);
+      // Ala derecha
+      ctx.quadraticCurveTo(8, -8 + flap, 18, -4 + flap * 1.3);
+      ctx.quadraticCurveTo(13, 2 + flap * 0.5, 9, 3);
+      ctx.quadraticCurveTo(5, 5, 0, 4);
+      // Ala izquierda
+      ctx.quadraticCurveTo(-5, 5, -9, 3);
+      ctx.quadraticCurveTo(-13, 2 + flap * 0.5, -18, -4 + flap * 1.3);
+      ctx.quadraticCurveTo(-8, -8 + flap, 0, 1);
+
+      ctx.closePath();
+      ctx.fill();
+
+      // Pequeños ojos rojos/amarillos sutiles
+      ctx.fillStyle = 'rgba(255, 75, 40, 0.85)';
+      ctx.fillRect(-1.5, -1, 1, 1);
+      ctx.fillRect(0.5, -1, 1, 1);
+
+      ctx.restore();
+    };
+
+    // Helper: Dibujar araña colgante
+    const drawSpider = (anchorX, currentLength, swingAngle, size) => {
+      const spiderX = anchorX + Math.sin(swingAngle) * 15;
+      const spiderY = currentLength;
+
+      ctx.save();
+      // Hilo de seda
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(anchorX, 0);
+      ctx.lineTo(spiderX, spiderY);
+      ctx.stroke();
+
+      // Cuerpo de araña
+      ctx.translate(spiderX, spiderY);
+      ctx.fillStyle = 'rgba(22, 18, 26, 0.9)';
+      // Abdomen
+      ctx.beginPath();
+      ctx.arc(0, size * 0.4, size * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+      // Cefalotórax
+      ctx.beginPath();
+      ctx.arc(0, -size * 0.2, size * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 8 Patas arqueadas
+      ctx.strokeStyle = 'rgba(25, 20, 30, 0.85)';
+      ctx.lineWidth = 1.1;
+      const legOffsets = [-0.4, -0.1, 0.2, 0.5];
+      legOffsets.forEach((off, idx) => {
+        // Pata izquierda
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.2, off * size);
+        ctx.quadraticCurveTo(-size * 1.4, off * size - size * 0.6, -size * 1.8, off * size + (idx % 2 === 0 ? size : -size * 0.3));
+        ctx.stroke();
+        // Pata derecha
+        ctx.beginPath();
+        ctx.moveTo(size * 0.2, off * size);
+        ctx.quadraticCurveTo(size * 1.4, off * size - size * 0.6, size * 1.8, off * size + (idx % 2 === 0 ? size : -size * 0.3));
+        ctx.stroke();
+      });
+
+      // Detalle rojo en espalda estilo viuda negra
+      ctx.fillStyle = 'rgba(220, 30, 40, 0.8)';
+      ctx.beginPath();
+      ctx.arc(0, size * 0.35, size * 0.18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    };
+
     // ─── BUCLE DE RENDERIZADO ───────────────────────────────────────────
     const render = () => {
       ctx.clearRect(0, 0, width, height);
+
+      // Telarañas estacionales en las 4 esquinas (solo en Halloween)
+      if (themeConfig.theme === 'halloween') {
+        drawCornerWeb(0, 0, 1, 1); // Esquina superior izquierda
+        drawCornerWeb(width, 0, -1, 1); // Esquina superior derecha
+        drawCornerWeb(0, height, 1, -1); // Esquina inferior izquierda
+        drawCornerWeb(width, height, -1, -1); // Esquina inferior derecha
+      }
 
       // Dibujar partículas normales de fondo
       for (let p of particles) {
@@ -132,7 +310,6 @@ export default function FestiveCanvasOverlay() {
           if (p.x < -20) p.x = width + 20;
           if (p.x > width + 20) p.x = -20;
 
-          // Halo místico (Glow)
           const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 3);
           grad.addColorStop(0, `${p.color} ${p.alpha})`);
           grad.addColorStop(0.5, `${p.color} ${p.alpha * 0.3})`);
@@ -141,27 +318,39 @@ export default function FestiveCanvasOverlay() {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius * 3, 0, Math.PI * 2);
           ctx.fill();
-        } else if (p.type === 'bat') {
+        } else if (p.type === 'flying_bat') {
+          // Vuelo dinámico de un lado a otro
           p.x += p.speedX;
-          p.y += p.speedY;
-          p.wings += 0.15;
-          if (p.y < -30) {
-            p.y = height + 10;
-            p.x = Math.random() * width;
+          p.y += p.speedY + Math.sin(p.wingPhase * 0.4) * 0.7;
+          p.wingPhase += p.wingSpeed;
+
+          const flyRight = p.speedX > 0;
+          if (flyRight && p.x > width + 80) {
+            p.x = -60;
+            p.y = Math.random() * (height * 0.7) + 20;
+          } else if (!flyRight && p.x < -80) {
+            p.x = width + 60;
+            p.y = Math.random() * (height * 0.7) + 20;
           }
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.fillStyle = `rgba(20, 15, 25, ${p.alpha * 0.8})`;
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(-6, -4 * Math.sin(p.wings));
-          ctx.lineTo(-2, 2);
-          ctx.lineTo(0, 1);
-          ctx.lineTo(2, 2);
-          ctx.lineTo(6, -4 * Math.sin(p.wings));
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
+
+          drawBat(p.x, p.y, p.scale, p.wingPhase, flyRight, p.alpha);
+        } else if (p.type === 'hanging_spider') {
+          // Subir y bajar suavemente
+          if (p.descending) {
+            p.currentLength += p.speed;
+            if (p.currentLength >= p.maxLength) {
+              p.descending = false;
+              p.maxLength = Math.random() * (height * 0.5) + 80;
+            }
+          } else {
+            p.currentLength -= p.speed;
+            if (p.currentLength <= p.minLength) {
+              p.descending = true;
+              p.minLength = Math.random() * 40 + 20;
+            }
+          }
+          p.swingAngle += p.swingSpeed;
+          drawSpider(p.anchorX, p.currentLength, p.swingAngle, p.size);
         } else if (p.type === 'snow') {
           p.swing += 0.02;
           p.x += p.speedX + Math.sin(p.swing) * 0.3;
