@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCart } from '../../context/CartContext';
+import { formatWhatsAppOrderMessage } from '../../utils/whatsappOrder';
 
 function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
@@ -282,9 +283,7 @@ export default function CartDrawer() {
                 </p>
                 <a
                   href={`https://wa.me/${tiendaEstado.whatsapp || '34613927596'}?text=${encodeURIComponent(
-                    `Hola, quiero hacer un pedido:\n\n` +
-                    cart.map(it => `• ${it.quantity}x ${it.name} (${fmt(it.price * it.quantity)})`).join('\n') +
-                    `\n\nTotal estimado: ${fmt(finalPrice)}`
+                    formatWhatsAppOrderMessage(cart, finalPrice)
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -1,17 +1,15 @@
 import React from 'react';
+import { formatWhatsAppOrderMessage } from '../../utils/whatsappOrder';
 
-export default function AvisoPedidosDesactivadosModal({ tiendaEstado, platoIntentado, onClose }) {
+export default function AvisoPedidosDesactivadosModal({
+  tiendaEstado,
+  platoIntentado,
+  cart = [],
+  finalPrice = 0,
+  onClose
+}) {
   const whatsappNumber = tiendaEstado?.whatsapp || '34613927596';
-  
-  // Mensaje para WhatsApp: 'Hola, quiero hacer un pedido'
-  let mensajeWa = 'Hola, quiero hacer un pedido';
-  if (platoIntentado?.dish) {
-    const qty = platoIntentado.cantidad || 1;
-    const porcionStr = platoIntentado.portion?.cant ? ` (${platoIntentado.portion.cant} uds)` : '';
-    const opcionStr = platoIntentado.opcion?.label ? ` [${platoIntentado.opcion.label}]` : '';
-    mensajeWa += `: ${qty}x ${platoIntentado.dish.nombre}${porcionStr}${opcionStr}`;
-  }
-
+  const mensajeWa = formatWhatsAppOrderMessage(cart, finalPrice, platoIntentado);
   const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensajeWa)}`;
 
   return (
@@ -116,8 +114,34 @@ export default function AvisoPedidosDesactivadosModal({ tiendaEstado, platoInten
             'Pedidos online desactivados temporalmente. Para realizar su pedido, por favor contacte directamente por WhatsApp o por teléfono al 613 927 596.'}
         </p>
 
-        {/* Detalle del plato intentado */}
-        {platoIntentado?.dish && (
+        {/* Detalle de los productos a pedir */}
+        {cart?.length > 0 ? (
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.85)',
+              marginBottom: '18px',
+              textAlign: 'left',
+              maxHeight: '120px',
+              overflowY: 'auto'
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: '6px', color: '#c9a84c' }}>
+              Productos en el pedido ({cart.length}):
+            </div>
+            {cart.map((it, idx) => (
+              <div key={idx} style={{ lineHeight: 1.4 }}>
+                • {it.cantidad || 1}x {it.nombre || it.name}
+                {it.porcion ? ` (${it.porcion} uds)` : ''}
+                {it.opcion ? ` [${it.opcion}]` : ''}
+              </div>
+            ))}
+          </div>
+        ) : platoIntentado?.dish ? (
           <div
             style={{
               background: 'rgba(255, 255, 255, 0.04)',
@@ -125,14 +149,14 @@ export default function AvisoPedidosDesactivadosModal({ tiendaEstado, platoInten
               borderRadius: '8px',
               padding: '8px 12px',
               fontSize: '12px',
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: 'rgba(255, 255, 255, 0.8)',
               marginBottom: '18px',
               display: 'inline-block'
             }}
           >
-            Plato: <strong>{platoIntentado.cantidad || 1}x {platoIntentado.dish.nombre}</strong>
+            Plato seleccionado: <strong>{platoIntentado.cantidad || 1}x {platoIntentado.dish.nombre}</strong>
           </div>
-        )}
+        ) : null}
 
         {/* Botón WhatsApp */}
         <a

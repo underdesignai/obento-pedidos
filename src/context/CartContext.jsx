@@ -235,6 +235,8 @@ export function CartProvider({ children }) {
         <AvisoPedidosDesactivadosModal
           tiendaEstado={tiendaEstado}
           platoIntentado={ultimoPlatoIntentado}
+          cart={cart}
+          finalPrice={finalPrice}
           onClose={() => setAvisoDesactivadoOpen(false)}
         />
       )}

@@ -6,6 +6,7 @@ import CheckoutModal from '../components/cart/CheckoutModal';
 import OrderSuccessModal from '../components/cart/OrderSuccessModal';
 import AllergenModal from '../components/AllergenModal';
 import { useCart } from '../context/CartContext';
+import { formatWhatsAppOrderMessage } from '../utils/whatsappOrder';
 
 function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
@@ -72,8 +73,10 @@ const MENU_SECTIONS = [
 
 export default function PedidosPage() {
   const {
+    cart,
     totalCount,
     totalPrice,
+    finalPrice,
     setIsCartOpen,
     setIsCheckoutOpen,
     clearCart,
@@ -376,7 +379,9 @@ export default function PedidosPage() {
                   </div>
                 </div>
                 <a
-                  href={`https://wa.me/${tiendaEstado?.whatsapp || '34613927596'}?text=${encodeURIComponent('Hola, quiero hacer un pedido')}`}
+                  href={`https://wa.me/${tiendaEstado?.whatsapp || '34613927596'}?text=${encodeURIComponent(
+                    formatWhatsAppOrderMessage(cart, finalPrice)
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{

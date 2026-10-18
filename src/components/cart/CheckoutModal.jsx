@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { trackOrderCompleted } from '../../utils/analytics';
+import { formatWhatsAppOrderMessage } from '../../utils/whatsappOrder';
 
 function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
@@ -215,7 +216,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
             </div>
             {(errorMsg.toLowerCase().includes('desactivad') || !tiendaEstado?.activo) && (
               <a
-                href={`https://wa.me/${tiendaEstado?.whatsapp || '34613927596'}?text=${encodeURIComponent('Hola, quiero hacer un pedido')}`}
+                href={`https://wa.me/${tiendaEstado?.whatsapp || '34613927596'}?text=${encodeURIComponent(
+                  formatWhatsAppOrderMessage(cart, finalPrice)
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
