@@ -22,7 +22,8 @@ import {
   obtenerOfertasActivasDb,
   obtenerBotWebConfigDb,
   obtenerStripeConfigDb,
-  obtenerHistorialDeliveryDb
+  obtenerHistorialDeliveryDb,
+  obtenerEstadoTiendaDb
 } from './db/index.js';
 import { sendOrderConfirmedEmail, sendOrderReadyEmail } from './email.js';
 
@@ -235,9 +236,34 @@ app.get('/api/ofertas', async (req, res) => {
   }
 });
 
+// 0. ESTADO DE PEDIDOS ONLINE (Activo / Pausado con aviso WhatsApp)
+app.get('/api/tienda/estado', async (req, res) => {
+  try {
+    const estado = await obtenerEstadoTiendaDb();
+    res.json({ ok: true, ...estado });
+  } catch (err) {
+    res.json({
+      ok: true,
+      activo: true,
+      mensaje: 'Pedidos online desactivados temporalmente. Para realizar su pedido, por favor contacte directamente por WhatsApp o por teléfono al 613 927 596.',
+      whatsapp: '34613927596'
+    });
+  }
+});
+
 // 1. CREAR PEDIDO (Protegido contra Spam DoS con orderCreationLimiter y sanitización estricta)
 app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
   try {
+    // Verificar si los pedidos online están activos en este momento
+    const estadoTienda = await obtenerEstadoTiendaDb();
+    if (!estadoTienda.activo) {
+      return res.status(403).json({
+        error: estadoTienda.mensaje || 'Los pedidos online están desactivados temporalmente. Por favor realiza tu pedido por WhatsApp.',
+        pedidosDesactivados: true,
+        whatsapp: estadoTienda.whatsapp || '34613927596'
+      });
+    }
+
     const {
       cliente_nombre,
       cliente_telefono,

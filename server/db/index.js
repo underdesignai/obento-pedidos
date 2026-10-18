@@ -609,3 +609,30 @@ export async function obtenerStripeConfigDb() {
     return { secretKey: null, publishableKey: null };
   }
 }
+
+// Obtener estado de activación de tienda online
+export async function obtenerEstadoTiendaDb() {
+  const DEFAULT = {
+    activo: true,
+    mensaje: 'Pedidos online desactivados temporalmente. Para realizar su pedido, por favor contacte directamente por WhatsApp o por teléfono al 613 927 596.',
+    whatsapp: '34613927596'
+  };
+
+  try {
+    const res = await pool.query(
+      `SELECT clave, valor FROM configuracion WHERE clave IN ('pedidos_online_activo', 'pedidos_desactivados_mensaje', 'pedidos_desactivados_whatsapp')`
+    );
+    const map = {};
+    for (const row of res.rows) {
+      map[row.clave] = row.valor;
+    }
+    return {
+      activo: map['pedidos_online_activo'] !== undefined ? map['pedidos_online_activo'] === 'true' : DEFAULT.activo,
+      mensaje: map['pedidos_desactivados_mensaje'] || DEFAULT.mensaje,
+      whatsapp: map['pedidos_desactivados_whatsapp'] || DEFAULT.whatsapp
+    };
+  } catch (err) {
+    return DEFAULT;
+  }
+}
+
