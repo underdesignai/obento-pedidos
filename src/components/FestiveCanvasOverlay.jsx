@@ -25,64 +25,64 @@ export default function FestiveCanvasOverlay() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Ajuste de densidad según intensidad
+    // Ajuste de densidad según intensidad (reducido a la mitad para mayor limpieza visual)
     const multiplier =
-      themeConfig.intensity === 'subtle' ? 0.6 : themeConfig.intensity === 'festive' ? 1.6 : 1.0;
+      themeConfig.intensity === 'subtle' ? 0.3 : themeConfig.intensity === 'festive' ? 0.8 : 0.5;
 
     // ─── GENERACIÓN DE PARTÍCULAS SEGÚN TEMA ─────────────────────────────
     const particles = [];
-    const count = Math.floor((width < 768 ? 16 : 30) * multiplier);
+    const count = Math.floor((width < 768 ? 8 : 14) * multiplier);
 
     if (themeConfig.theme === 'halloween') {
-      // 1. Llamas Hitodama espectrales (fuego fatuo japonés)
+      // 1. Llamas Hitodama espectrales (fuego fatuo japonés) - Reducidas
       for (let i = 0; i < count; i++) {
         particles.push({
           type: 'hitodama',
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * 2.8 + 1.5,
+          radius: Math.random() * 2.5 + 1.2,
           color: Math.random() > 0.4 ? 'rgba(255, 120, 30,' : 'rgba(80, 210, 255,',
-          alpha: Math.random() * 0.5 + 0.25,
-          speedX: (Math.random() - 0.5) * 0.8,
-          speedY: -Math.random() * 0.4 - 0.1,
+          alpha: Math.random() * 0.4 + 0.2,
+          speedX: (Math.random() - 0.5) * 0.6,
+          speedY: -Math.random() * 0.35 - 0.08,
           oscillation: Math.random() * Math.PI * 2,
           oscSpeed: 0.02 + Math.random() * 0.03,
         });
       }
 
-      // 2. Murciélagos de gran vuelo (cruzan la pantalla de un lado a otro)
-      const batCount = Math.max(3, Math.floor((width < 768 ? 4 : 8) * multiplier));
+      // 2. Murciélagos de gran vuelo (solo 2-3 en pantalla)
+      const batCount = width < 768 ? 2 : 3;
       for (let i = 0; i < batCount; i++) {
         const flyRight = Math.random() > 0.5;
-        const speed = (Math.random() * 1.8 + 1.2) * (flyRight ? 1 : -1);
+        const speed = (Math.random() * 1.5 + 1.0) * (flyRight ? 1 : -1);
         particles.push({
           type: 'flying_bat',
           x: flyRight ? -50 - Math.random() * 200 : width + 50 + Math.random() * 200,
-          y: Math.random() * (height * 0.65) + 30,
+          y: Math.random() * (height * 0.6) + 30,
           speedX: speed,
-          speedY: (Math.random() - 0.5) * 0.5,
-          scale: Math.random() * 0.6 + 0.7,
+          speedY: (Math.random() - 0.5) * 0.4,
+          scale: Math.random() * 0.5 + 0.65,
           wingPhase: Math.random() * Math.PI * 2,
-          wingSpeed: 0.22 + Math.random() * 0.08,
-          alpha: Math.random() * 0.3 + 0.65,
+          wingSpeed: 0.2 + Math.random() * 0.08,
+          alpha: Math.random() * 0.25 + 0.6,
         });
       }
 
-      // 3. Arañas colgantes que descienden en su hilo de seda
-      const spiderCount = Math.max(2, Math.floor((width < 768 ? 3 : 5) * multiplier));
+      // 3. Arañas colgantes (solo 2 discretas)
+      const spiderCount = width < 768 ? 1 : 2;
       for (let i = 0; i < spiderCount; i++) {
         particles.push({
           type: 'hanging_spider',
           anchorX: (width / (spiderCount + 1)) * (i + 1) + (Math.random() - 0.5) * 40,
-          currentLength: Math.random() * 120 + 40,
-          targetLength: Math.random() * (height * 0.45) + 80,
-          minLength: 30,
-          maxLength: Math.random() * (height * 0.55) + 100,
+          currentLength: Math.random() * 80 + 30,
+          targetLength: Math.random() * (height * 0.35) + 60,
+          minLength: 25,
+          maxLength: Math.random() * (height * 0.45) + 80,
           descending: true,
-          speed: Math.random() * 0.4 + 0.2,
+          speed: Math.random() * 0.35 + 0.15,
           swingAngle: 0,
           swingSpeed: 0.015 + Math.random() * 0.01,
-          size: Math.random() * 2 + 5,
+          size: Math.random() * 1.5 + 4.5,
         });
       }
     } else if (themeConfig.theme === 'navidad') {
