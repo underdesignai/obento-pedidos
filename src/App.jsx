@@ -5,6 +5,7 @@ import TrackingPage from './pages/TrackingPage';
 import DeliveryPage from './pages/DeliveryPage';
 import InstallPrompt from './components/InstallPrompt';
 import CookieBanner from './components/legal/CookieBanner';
+import LegalModal from './components/legal/LegalModal';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
 import FestiveCanvasOverlay from './components/FestiveCanvasOverlay';
