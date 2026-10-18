@@ -41,6 +41,20 @@ export function ThemeProvider({ children }) {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (themeConfig.active && themeConfig.theme && themeConfig.theme !== 'normal') {
+      document.body.classList.add(`theme-${themeConfig.theme}`);
+      document.documentElement.setAttribute('data-theme', themeConfig.theme);
+    } else {
+      document.body.classList.remove('theme-halloween', 'theme-navidad', 'theme-primavera', 'theme-verano');
+      document.documentElement.removeAttribute('data-theme');
+    }
+    return () => {
+      document.body.classList.remove('theme-halloween', 'theme-navidad', 'theme-primavera', 'theme-verano');
+      document.documentElement.removeAttribute('data-theme');
+    };
+  }, [themeConfig]);
+
   const triggerCartCelebration = (x, y) => {
     if (!themeConfig.active || !themeConfig.cartCelebration || themeConfig.theme === 'normal') {
       return;

@@ -7969,3 +7969,29 @@ option:hover {
   color: #a09991;
   font-size: 0.85rem;
 }
+
+/* =========================================================
+   TEMA TEMÁTICO HALLOWEEN · FONDOS DE CEMENTERIO JAPONÉS
+   ========================================================= */
+body.theme-halloween .pedidos-hero-banner {
+  background: 
+    linear-gradient(180deg, rgba(14, 12, 10, 0.78) 0%, rgba(14, 12, 10, 0.6) 40%, rgba(14, 12, 10, 0.95) 100%),
+    radial-gradient(ellipse at 50% 30%, rgba(255, 117, 24, 0.16) 0%, transparent 65%),
+    url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-halloween .pedidos-menu-section {
+  background: 
+    linear-gradient(180deg, rgba(12, 11, 10, 0.88) 0%, rgba(12, 11, 10, 0.82) 50%, rgba(12, 11, 10, 0.95) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 117, 24, 0.1) 0%, transparent 60%),
+    url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+@media (max-width: 900px) {
+  body.theme-halloween .pedidos-hero-banner,
+  body.theme-halloween .pedidos-menu-section {
+    background-attachment: scroll !important;
+  }
+}
