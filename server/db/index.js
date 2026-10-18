@@ -412,12 +412,23 @@ export async function obtenerCartaDb() {
       nombre: fixCorruptedAccents(row.nombre),
       descripcion: fixCorruptedAccents(row.descripcion || ''),
       precio: Number(row.precio),
-      imagen: (row.imagen ? row.imagen.replace(/\.jpe?g$/i, '.webp') : '/images/placeholder.webp'),
+      imagen: (row.imagen || '/images/placeholder.webp'),
       alergenos: row.alergenos ? row.alergenos.split(',').map(s => s.trim()).filter(Boolean) : [],
       destacado: Boolean(row.destacado)
     }));
   } catch (err) {
     console.warn('⚠️ Error al leer MenuItem de base de datos:', err.message);
+    return null;
+  }
+}
+
+// Obtener imagen binaria desde tabla Imagen
+export async function obtenerImagenDb(id) {
+  try {
+    const res = await pool.query('SELECT mime, data FROM "Imagen" WHERE id = $1', [Number(id)]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.warn('⚠️ Error al leer Imagen de base de datos:', err.message);
     return null;
   }
 }

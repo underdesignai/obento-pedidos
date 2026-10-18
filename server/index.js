@@ -15,6 +15,7 @@ import {
   actualizarEstadoPagoDb,
   obtenerPedidoPorIdDb,
   obtenerCartaDb,
+  obtenerImagenDb,
   registrarEventoAnalyticsDb,
   validarCuponDb,
   incrementarUsoCuponDb,
@@ -190,6 +191,22 @@ app.get('/api/carta', async (req, res) => {
     console.warn('⚠️ Error al consultar /api/carta:', err.message);
   }
   res.json([]);
+});
+
+// SERVIR IMÁGENES ALMACENADAS EN LA BD COMPARTIDA (Subidas desde Dashboard)
+app.get('/api/imagenes/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(404).send('Not found');
+    const img = await obtenerImagenDb(id);
+    if (!img) return res.status(404).send('Not found');
+    res.setHeader('Content-Type', img.mime);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.send(img.data);
+  } catch (err) {
+    console.error('Error al servir imagen:', err);
+    return res.status(500).send('Error');
+  }
 });
 
 // VALIDAR CUPÓN DE DESCUENTO (Protegido contra fuerza bruta con couponLimiter)
