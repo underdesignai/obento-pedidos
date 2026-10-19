@@ -8151,7 +8151,7 @@ body.theme-halloween .pedidos-hero-banner {
   background: 
     radial-gradient(ellipse at 50% 30%, rgba(255, 117, 24, 0.22) 0%, transparent 65%),
     linear-gradient(180deg, rgba(12, 11, 10, 0.55) 0%, rgba(12, 11, 10, 0.35) 45%, rgba(12, 11, 10, 0.92) 100%),
-    url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-1.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
@@ -8159,7 +8159,7 @@ body.theme-halloween .pedidos-menu-section {
   background: 
     radial-gradient(ellipse at 50% 0%, rgba(255, 117, 24, 0.15) 0%, transparent 60%),
     linear-gradient(180deg, rgba(12, 11, 10, 0.72) 0%, rgba(12, 11, 10, 0.6) 50%, rgba(12, 11, 10, 0.88) 100%),
-    url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-2.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
