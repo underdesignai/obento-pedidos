@@ -332,25 +332,23 @@ export default function PedidosPage() {
       {/* Hero Banner de Pedidos */}
       <section className="pedidos-hero-banner">
         <div className="section-container">
-          <div className="pedidos-hero-glass-card">
-            <div className="section-eyebrow-badge">
-              <span className="eyebrow-pulse-dot"></span>
-              <span>{isHalloween ? '🦇 ESPECIAL HALLOWEEN · LA ÑORA (MURCIA)' : '🍱 SERVICIO TAKEAWAY · LA ÑORA (MURCIA)'}</span>
+          <div className="pedidos-hero-content">
+            <div className="section-eyebrow-dot">
+              <span className="dot"></span>
+              <span>{isHalloween ? '🦇 Especial Halloween · La Ñora (Murcia)' : 'Servicio Takeaway · La Ñora (Murcia)'}</span>
             </div>
-
             <h1 className="pedidos-hero-title">
               {isHalloween ? (
                 <>
-                  El Sushi más <span className="title-highlight-halloween">Tenebroso</span> de Murcia
+                  El Sushi más <span style={{ color: '#ff7518', textShadow: '0 0 20px rgba(255,117,24,0.45)' }}>Tenebroso</span> de Murcia
                 </>
               ) : (
                 'Haz tu Pedido Online'
               )}
             </h1>
-
             <p className="pedidos-hero-desc">
               {isHalloween ? (
-                'Edición especial de Halloween: elaboraciones artesanales preparadas al momento con el misterio y la esencia más selecta de Japón. ¡Pide ahora y recoge recién hecho!'
+                'Edición especial de Halloween: platos artesanales preparados al momento con el misterio y la esencia más oscura de Japón. ¡Haz tu pedido ahora!'
               ) : (
                 'Toda nuestra carta artesanal preparada al momento. Elige tus platos, personaliza tus porciones y recoge en Calle Amargura, 3 (La Ñora) recién salido de cocina.'
               )}
@@ -358,37 +356,17 @@ export default function PedidosPage() {
 
             <div className="pedidos-highlights-row">
               <div className="pedidos-highlight-chip">
-                <span className="chip-ico">⏱️</span>
+                <span>⏱️</span>
                 <span>Preparación: ~25 - 35 min</span>
               </div>
               <div className="pedidos-highlight-chip">
-                <span className="chip-ico">💳</span>
-                <span>Pago Online (Stripe) o al Recoger</span>
+                <span>💳</span>
+                <span>Pago con Tarjeta Online (Stripe) o al Recoger</span>
               </div>
               <div className="pedidos-highlight-chip">
-                <span className="chip-ico">📍</span>
-                <span>Recogida en C/ Amargura 3, La Ñora</span>
+                <span>📍</span>
+                <span>Recogida en Local: C/ Amargura 3, La Ñora</span>
               </div>
-            </div>
-
-            <div className="pedidos-hero-cta-wrap">
-              <button
-                type="button"
-                className="pedidos-hero-cta-btn"
-                onClick={() => {
-                  const target = document.getElementById('pedidos-menu-root');
-                  if (target) {
-                    const isMobile = window.innerWidth <= 768;
-                    const y = target.getBoundingClientRect().top + window.pageYOffset - (isMobile ? 65 : 75);
-                    window.scrollTo({ top: y, behavior: 'smooth' });
-                  }
-                }}
-              >
-                <span>{isHalloween ? '🎃 Explorar Carta y Pedir' : '🥢 Ver Carta y Empezar Pedido'}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="btn-ico-svg">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
             </div>
           </div>
         </div>
