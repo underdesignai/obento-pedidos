@@ -26,8 +26,8 @@ export default function FestiveCanvasOverlay() {
       width = bgCanvas.width = fgCanvas.width = window.innerWidth;
       height = bgCanvas.height = fgCanvas.height = window.innerHeight;
       const spiderPositions = [
-        width < 768 ? Math.max(30, width * 0.10) : Math.max(60, width * 0.11),
-        width < 768 ? Math.min(width - 30, width * 0.90) : Math.min(width - 60, width * 0.89)
+        width < 768 ? Math.max(30, width * 0.12) : Math.max(90, width * 0.12),
+        width < 768 ? Math.min(width - 30, width * 0.88) : Math.min(width - 90, width * 0.88)
       ];
       let spIdx = 0;
       particles.forEach((p) => {
@@ -85,22 +85,22 @@ export default function FestiveCanvasOverlay() {
 
       // 3. Arañas colgantes: SIEMPRE 2 (izquierda y derecha en todos los tamaños)
       const spiderPositions = [
-        width < 768 ? Math.max(30, width * 0.10) : Math.max(60, width * 0.11),
-        width < 768 ? Math.min(width - 30, width * 0.90) : Math.min(width - 60, width * 0.89)
+        width < 768 ? Math.max(30, width * 0.12) : Math.max(90, width * 0.12),
+        width < 768 ? Math.min(width - 30, width * 0.88) : Math.min(width - 90, width * 0.88)
       ];
 
       for (let i = 0; i < 2; i++) {
         particles.push({
           type: 'hanging_spider',
           anchorX: spiderPositions[i],
-          currentLength: Math.random() * 80 + 40,
-          targetLength: Math.random() * (height * 0.38) + 80,
-          minLength: 35,
-          maxLength: Math.random() * (height * 0.48) + 100,
-          descending: i % 2 === 0,
-          speed: Math.random() * 0.35 + 0.18,
-          swingAngle: i === 0 ? 0 : Math.PI / 4,
-          swingSpeed: 0.015 + Math.random() * 0.01,
+          currentLength: i === 0 ? 135 : 165, // Posición inicial visible de inmediato bajo la barra (72px)
+          targetLength: Math.random() * (height * 0.28) + 160,
+          minLength: 88, // NUNCA se oculta detrás de la barra de navegación de 72px
+          maxLength: Math.random() * (height * 0.35) + 210,
+          descending: i === 0,
+          speed: Math.random() * 0.3 + 0.2,
+          swingAngle: i === 0 ? 0 : 0.4,
+          swingSpeed: 0.018 + (i * 0.004),
           size: (Math.random() * 1.5 + 4.5) * 3, // +300% de tamaño
         });
       }
@@ -386,7 +386,7 @@ export default function FestiveCanvasOverlay() {
             p.currentLength -= p.speed;
             if (p.currentLength <= p.minLength) {
               p.descending = true;
-              p.minLength = Math.random() * 40 + 20;
+              p.minLength = Math.random() * 15 + 85;
             }
           }
           p.swingAngle += p.swingSpeed;
