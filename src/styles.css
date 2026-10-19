@@ -3512,6 +3512,8 @@ img {
 }
 
 /* =========================================================
+   CABECERA Y HERO BANNER PEDIDOS - EXACTAMENTE 100% ALTURA VISIBLE
+   ========================================================= */
 :root {
   --pedidos-header-h: 70px;
 }
@@ -3531,16 +3533,14 @@ img {
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* =========================================================
-   HERO BANNER PEDIDOS - EXACTAMENTE 100% ALTURA VISIBLE DE PANTALLA
-   ========================================================= */
 .pedidos-hero-banner {
   width: 100%;
   height: calc(100vh - var(--pedidos-header-h)) !important;
   height: calc(100dvh - var(--pedidos-header-h)) !important;
+  min-height: calc(100vh - var(--pedidos-header-h)) !important;
+  min-height: calc(100dvh - var(--pedidos-header-h)) !important;
   max-height: calc(100vh - var(--pedidos-header-h)) !important;
   max-height: calc(100dvh - var(--pedidos-header-h)) !important;
-  min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
@@ -3636,6 +3636,8 @@ img {
   }
   .site-header.pedidos-header {
     height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
   }
   .pedidos-header .nav-logo {
     height: 32px !important;
@@ -3664,6 +3666,8 @@ img {
   }
   .site-header.pedidos-header {
     height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
   }
   .pedidos-header .nav-logo {
     height: 28px !important;
