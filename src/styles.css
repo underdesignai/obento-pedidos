@@ -3322,10 +3322,16 @@ img {
   margin-left: 4px;
 }
 
-/* Hero Banner Pedidos - Ampliado a toda la pantalla manteniendo márgenes */
+/* Hero Banner Pedidos - Ampliado a toda la pantalla (Ancho y Alto) manteniendo márgenes */
 .pedidos-hero-banner {
   width: 100%;
-  padding: 56px 0 42px;
+  min-height: calc(100vh - 126px);
+  min-height: calc(100dvh - 126px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(36px, 6vh, 64px) 0;
   background: 
     radial-gradient(circle at 50% 0%, rgba(200, 30, 34, 0.22) 0%, transparent 70%),
     linear-gradient(180deg, #181410 0%, #0e0c0a 100%);
@@ -3338,6 +3344,10 @@ img {
   width: 100% !important;
   max-width: 100% !important;
   padding: 0 clamp(20px, 4vw, 56px) !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
 }
 
