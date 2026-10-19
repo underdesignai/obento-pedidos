@@ -264,11 +264,8 @@ export default function PedidosPage() {
 
   return (
     <div className="pedidos-page">
-      {/* Banner Superior Estacional y Festivo */}
-      <FestiveBanner />
-
-      {/* Barra de Navegación de Pedidos */}
-      <header className="site-header pedidos-header">
+      {/* Barra de Navegación de Pedidos Unificada */}
+      <header className={`site-header pedidos-header ${themeConfig.active && themeConfig.theme !== 'normal' ? `theme-header-${themeConfig.theme}` : ''}`}>
         <div className="header-container">
           <div className="brand-group" onClick={() => (window.location.href = '/')} style={{ cursor: 'pointer' }}>
             <img
@@ -282,6 +279,9 @@ export default function PedidosPage() {
               <span className="nav-brand-sub hide-on-mobile">Takeaway · Pedidos Online</span>
             </div>
           </div>
+
+          {/* Bloque temático estacional integrado directamente en la barra de menú */}
+          <FestiveBanner />
 
           <div className="nav-actions">
             <a

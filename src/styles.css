@@ -3322,27 +3322,198 @@ img {
   margin-left: 4px;
 }
 
-/* Hero Banner Pedidos - Ampliado a toda la pantalla (Ancho y Alto) manteniendo márgenes */
+/* =========================================================
+   BARRA FESTIVA INTEGRADA (UNIFICACIÓN DE MENÚ + TEMA)
+   ========================================================= */
+
+.site-header.pedidos-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(18, 15, 12, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--c-line);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-header.pedidos-header.theme-header-halloween {
+  background: linear-gradient(90deg, rgba(16, 12, 10, 0.96) 0%, rgba(35, 15, 45, 0.94) 50%, rgba(20, 14, 12, 0.96) 100%) !important;
+  border-bottom: 1px solid rgba(255, 117, 24, 0.45) !important;
+  box-shadow: 0 4px 25px rgba(255, 117, 24, 0.15), 0 2px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.site-header.pedidos-header.theme-header-navidad {
+  background: linear-gradient(90deg, rgba(16, 12, 10, 0.96) 0%, rgba(14, 38, 26, 0.94) 50%, rgba(20, 14, 12, 0.96) 100%) !important;
+  border-bottom: 1px solid rgba(56, 239, 125, 0.4) !important;
+  box-shadow: 0 4px 25px rgba(56, 239, 125, 0.12), 0 2px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.site-header.pedidos-header.theme-header-ano_nuevo {
+  background: linear-gradient(90deg, rgba(16, 12, 10, 0.96) 0%, rgba(45, 36, 15, 0.94) 50%, rgba(20, 14, 12, 0.96) 100%) !important;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.45) !important;
+  box-shadow: 0 4px 25px rgba(255, 215, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.site-header.pedidos-header.theme-header-reyes {
+  background: linear-gradient(90deg, rgba(16, 12, 10, 0.96) 0%, rgba(30, 18, 48, 0.94) 50%, rgba(20, 14, 12, 0.96) 100%) !important;
+  border-bottom: 1px solid rgba(157, 78, 221, 0.45) !important;
+  box-shadow: 0 4px 25px rgba(157, 78, 221, 0.15), 0 2px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.nav-festive-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 117, 24, 0.08);
+  border: 1px solid rgba(255, 117, 24, 0.3);
+  box-shadow: inset 0 0 12px rgba(255, 117, 24, 0.1), 0 0 14px rgba(255, 117, 24, 0.12);
+  transition: all 0.3s ease;
+  flex: 0 1 auto;
+  margin: 0 auto;
+}
+
+.nav-festive-slot.theme-navidad {
+  background: rgba(56, 239, 125, 0.08);
+  border-color: rgba(56, 239, 125, 0.3);
+  box-shadow: inset 0 0 12px rgba(56, 239, 125, 0.1), 0 0 14px rgba(56, 239, 125, 0.12);
+}
+
+.nav-festive-slot.theme-ano_nuevo {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: inset 0 0 12px rgba(255, 215, 0, 0.1), 0 0 14px rgba(255, 215, 0, 0.12);
+}
+
+.nav-festive-slot.theme-reyes {
+  background: rgba(157, 78, 221, 0.08);
+  border-color: rgba(157, 78, 221, 0.3);
+  box-shadow: inset 0 0 12px rgba(157, 78, 221, 0.1), 0 0 14px rgba(157, 78, 221, 0.12);
+}
+
+.nav-festive-icon {
+  font-size: 20px;
+  line-height: 1;
+  animation: festiveGhostFloat 3s ease-in-out infinite alternate;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes festiveGhostFloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(4deg); }
+  100% { transform: translateY(1px) rotate(-3deg); }
+}
+
+.nav-festive-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nav-festive-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.nav-festive-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 0 8px rgba(255, 117, 24, 0.4);
+}
+
+.nav-festive-title {
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.nav-festive-desc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+@media (max-width: 1180px) {
+  .nav-festive-desc {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .nav-festive-slot {
+    padding: 3px 8px;
+    gap: 6px;
+  }
+  .nav-festive-title {
+    display: none !important;
+  }
+  .nav-festive-badge {
+    font-size: 8.5px;
+    padding: 1px 5px;
+  }
+  .nav-festive-icon {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-festive-badge {
+    display: none !important;
+  }
+  .nav-festive-slot {
+    padding: 2px 6px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+/* =========================================================
+   HERO BANNER PEDIDOS - EXACTAMENTE 100% ALTURA VISIBLE (100dvh - 72px)
+   ========================================================= */
 .pedidos-hero-banner {
   width: 100%;
-  min-height: calc(100vh - 126px);
-  min-height: calc(100dvh - 126px);
+  height: calc(100vh - 72px);
+  height: calc(100dvh - 72px);
+  min-height: calc(100dvh - 72px);
+  max-height: calc(100dvh - 72px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: clamp(36px, 6vh, 64px) 0;
+  padding: 0;
+  margin: 0;
   background: 
     radial-gradient(circle at 50% 0%, rgba(200, 30, 34, 0.22) 0%, transparent 70%),
     linear-gradient(180deg, #181410 0%, #0e0c0a 100%);
   border-bottom: 1.5px solid rgba(200, 30, 34, 0.35);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
 }
 
 .pedidos-hero-banner .section-container {
   width: 100% !important;
   max-width: 100% !important;
+  height: 100% !important;
   padding: 0 clamp(20px, 4vw, 56px) !important;
   display: flex;
   flex-direction: column;
@@ -3354,25 +3525,34 @@ img {
 .pedidos-hero-content {
   text-align: center;
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 1050px !important;
   margin: 0 auto;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pedidos-hero-content .section-eyebrow-dot {
+  margin-bottom: 8px;
 }
 
 .pedidos-hero-title {
-  font-size: clamp(30px, 4.5vw, 48px);
-  margin-top: 12px;
-  margin-bottom: 14px;
+  font-size: clamp(26px, 3.8vw, 44px);
+  margin-top: 6px;
+  margin-bottom: 10px;
   letter-spacing: -0.02em;
   max-width: 100%;
+  line-height: 1.15;
 }
 
 .pedidos-hero-desc {
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: clamp(13.5px, 1.35vw, 15.5px);
+  line-height: 1.55;
   color: var(--c-text-dim);
-  margin-bottom: 24px;
-  max-width: 1100px;
+  margin-bottom: 20px;
+  max-width: 820px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -3381,7 +3561,7 @@ img {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
@@ -3395,8 +3575,9 @@ img {
   border: 1px solid var(--c-line);
   padding: 8px 16px;
   border-radius: 999px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--c-text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .site-header.pedidos-header .header-container {
