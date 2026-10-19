@@ -3597,7 +3597,19 @@ img {
 }
 
 .pedidos-hero-banner .hero-badge {
-  margin-bottom: 20px;
+  margin-bottom: clamp(10px, 1.6vh, 18px);
+}
+
+.pedidos-hero-logo-wrap {
+  margin-bottom: clamp(10px, 1.8vh, 18px);
+  display: flex;
+  justify-content: center;
+}
+
+.pedidos-hero-logo {
+  width: min(50vw, 210px);
+  height: auto;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.85));
 }
 
 .pedidos-hero-banner .hero-seals {

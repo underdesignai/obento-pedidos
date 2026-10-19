@@ -345,6 +345,16 @@ export default function PedidosPage() {
               </span>
             </div>
 
+            {/* Logo visual centrado idéntico a la web principal */}
+            <div className="hero-logo-wrap pedidos-hero-logo-wrap">
+              <img
+                src="/images/logo-obento.webp"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
+                alt="OBENTO Japanese Food"
+                className="hero-logo pedidos-hero-logo"
+              />
+            </div>
+
             <h1 className="hero-title pedidos-hero-title">
               {isHalloween ? (
                 <>
