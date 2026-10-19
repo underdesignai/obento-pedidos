@@ -3485,24 +3485,27 @@ img {
   }
 }
 
+/* =========================================================
+   CABECERA Y HERO BANNER PEDIDOS - IDÉNTICO A LA WEB PRINCIPAL
+   ========================================================= */
 .site-header.pedidos-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 100;
-  height: 68px;
-  min-height: 68px;
-  max-height: 68px;
-  box-sizing: border-box;
-  background: rgba(18, 15, 12, 0.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  height: 72px;
+  background: rgba(12, 11, 10, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--c-line);
+  box-sizing: border-box;
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .site-header.pedidos-header .header-container {
   max-width: 100%;
-  height: 68px;
+  height: 72px;
   padding: 0 clamp(16px, 3.5vw, 56px);
   display: flex;
   align-items: center;
@@ -3511,175 +3514,21 @@ img {
   box-sizing: border-box;
 }
 
-/* =========================================================
-/* =========================================================
-   CABECERA Y HERO BANNER PEDIDOS - IDÉNTICO A LA WEB PRINCIPAL
-   ========================================================= */
-.site-header.pedidos-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 72px !important;
-  min-height: 72px !important;
-  max-height: 72px !important;
-  background: rgba(18, 15, 12, 0.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--c-line);
-  box-sizing: border-box !important;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.pedidos-hero-banner {
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 72px);
-  height: calc(100dvh - 72px);
-  min-height: calc(100vh - 72px);
-  min-height: calc(100dvh - 72px);
-  max-height: calc(100vh - 72px);
-  max-height: calc(100dvh - 72px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  box-sizing: border-box;
-  background: 
-    radial-gradient(circle at 50% 0%, rgba(200, 30, 34, 0.22) 0%, transparent 70%),
-    linear-gradient(180deg, #181410 0%, #0e0c0a 100%);
-  border-bottom: 1px solid rgba(200, 30, 34, 0.35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-}
-
-@media (min-width: 1024px) {
-  .pedidos-hero-banner {
-    height: calc((100vh / 1.25) - 72px) !important;
-    height: calc((100dvh / 1.25) - 72px) !important;
-    min-height: calc((100vh / 1.25) - 72px) !important;
-    min-height: calc((100dvh / 1.25) - 72px) !important;
-    max-height: calc((100vh / 1.25) - 72px) !important;
-    max-height: calc((100dvh / 1.25) - 72px) !important;
+@media (max-width: 768px) {
+  .site-header.pedidos-header {
+    height: 58px !important;
   }
-}
-
-.pedidos-hero-banner .hero-container {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1150px;
-  padding: 10px 24px 20px;
-  margin: auto 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.pedidos-hero-banner .hero-title {
-  font-size: clamp(32px, 4.2vw, 54px);
-  line-height: 1.18;
-  letter-spacing: .02em;
-  margin-top: 0;
-  margin-bottom: 18px;
-  color: #ffffff;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 4px 28px rgba(0, 0, 0, 0.85);
-}
-
-.pedidos-hero-banner .hero-lead {
-  font-size: 17.5px;
-  line-height: 1.6;
-  color: #f5f0eb;
-  max-width: 820px;
-  margin: 0 auto 26px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 4px 22px rgba(0, 0, 0, 0.85);
-  font-weight: 500;
-}
-
-.pedidos-hero-banner .hero-badge {
-  margin-bottom: clamp(10px, 1.6vh, 18px);
-  background: rgba(18, 14, 12, 0.88);
-  border: 1px solid rgba(255, 117, 24, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65), 0 0 15px rgba(255, 117, 24, 0.15);
-}
-
-.pedidos-hero-banner .hero-badge .badge-text-primary {
-  color: #ff9d42;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
-}
-
-.pedidos-hero-banner .hero-badge .badge-text-sub {
-  color: #f5f0eb;
-  font-weight: 600;
-}
-
-.pedidos-hero-logo-wrap {
-  margin-bottom: clamp(10px, 1.8vh, 18px);
-  display: flex;
-  justify-content: center;
-}
-
-.pedidos-hero-logo {
-  width: min(50vw, 210px);
-  height: auto;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.85));
-}
-
-.pedidos-hero-banner .hero-seals {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.pedidos-hero-banner .seal-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(18, 14, 12, 0.88);
-  border: 1px solid rgba(255, 117, 24, 0.38);
-  padding: 6px 16px;
-  border-radius: 999px;
-  color: #f5f0eb;
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-}
-
-body:not(.theme-halloween) .pedidos-hero-banner .seal-item {
-  background: rgba(18, 15, 12, 0.85);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-
-.pedidos-hero-banner .seal-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(255, 117, 24, 0.2);
-  border: 1px solid rgba(255, 117, 24, 0.45);
-  color: #ff9d42;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-}
-
-body:not(.theme-halloween) .pedidos-hero-banner .seal-icon {
-  background: rgba(200, 30, 34, 0.15);
-  border-color: rgba(200, 30, 34, 0.35);
-  color: var(--c-gold);
+  .pedidos-header .header-container {
+    height: 58px !important;
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .pedidos-page {
+    padding-top: 58px !important;
+  }
+  .pedidos-hero-banner {
+    display: none !important;
+  }
 }
 
 /* Barra de controles: Buscador y Filtros */
@@ -5251,7 +5100,7 @@ body:not(.theme-halloween) .pedidos-hero-banner .seal-icon {
 
 .pedidos-sticky-nav-bar {
   position: sticky;
-  top: 68px; /* Debajo de .site-header fijo (68px) */
+  top: 72px; /* Debajo de .site-header fijo (72px) */
   z-index: 45;
   background: rgba(12, 11, 10, 0.94);
   backdrop-filter: blur(14px);
@@ -8297,10 +8146,11 @@ option:hover {
 /* =========================================================
    TEMA TEMÁTICO HALLOWEEN · FONDOS DE CEMENTERIO Y CONTENEDORES
    ========================================================= */
+body.theme-halloween .hero-section,
 body.theme-halloween .pedidos-hero-banner {
   background: 
-    radial-gradient(ellipse at 50% 50%, rgba(10, 8, 7, 0.68) 0%, rgba(10, 8, 7, 0.45) 60%, rgba(10, 8, 7, 0.92) 100%),
-    radial-gradient(ellipse at 50% 30%, rgba(255, 117, 24, 0.25) 0%, transparent 65%),
+    radial-gradient(ellipse at 50% 30%, rgba(255, 117, 24, 0.22) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(12, 11, 10, 0.55) 0%, rgba(12, 11, 10, 0.35) 45%, rgba(12, 11, 10, 0.92) 100%),
     url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
