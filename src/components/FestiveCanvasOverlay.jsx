@@ -25,10 +25,9 @@ export default function FestiveCanvasOverlay() {
     const handleResize = () => {
       width = bgCanvas.width = fgCanvas.width = window.innerWidth;
       height = bgCanvas.height = fgCanvas.height = window.innerHeight;
-      const spiderPositions = [
-        width < 768 ? Math.max(30, width * 0.12) : Math.max(90, width * 0.12),
-        width < 768 ? Math.min(width - 30, width * 0.88) : Math.min(width - 90, width * 0.88)
-      ];
+      const leftAnchor = width < 768 ? Math.max(35, width * 0.10) : Math.max(85, width * 0.12);
+      const rightAnchor = width - leftAnchor;
+      const spiderPositions = [leftAnchor, rightAnchor];
       let spIdx = 0;
       particles.forEach((p) => {
         if (p.type === 'hanging_spider') {
@@ -83,23 +82,22 @@ export default function FestiveCanvasOverlay() {
         });
       }
 
-      // 3. Arañas colgantes: SIEMPRE 2 (izquierda y derecha en todos los tamaños)
-      const spiderPositions = [
-        width < 768 ? Math.max(30, width * 0.12) : Math.max(90, width * 0.12),
-        width < 768 ? Math.min(width - 30, width * 0.88) : Math.min(width - 90, width * 0.88)
-      ];
+      // 3. Arañas colgantes: SIEMPRE 2 EXACTAMENTE SIMÉTRICAS (izquierda y derecha)
+      const leftAnchor = width < 768 ? Math.max(35, width * 0.10) : Math.max(85, width * 0.12);
+      const rightAnchor = width - leftAnchor;
+      const spiderPositions = [leftAnchor, rightAnchor];
 
       for (let i = 0; i < 2; i++) {
         particles.push({
           type: 'hanging_spider',
           anchorX: spiderPositions[i],
-          currentLength: i === 0 ? 135 : 165, // Posición inicial visible de inmediato bajo la barra (72px)
-          targetLength: Math.random() * (height * 0.28) + 160,
-          minLength: 88, // NUNCA se oculta detrás de la barra de navegación de 72px
-          maxLength: Math.random() * (height * 0.35) + 210,
+          currentLength: i === 0 ? 140 : 170, // Posición inicial visible de inmediato bajo la barra (72px)
+          targetLength: Math.min(height * 0.35, 230),
+          minLength: 95, // NUNCA se oculta detrás de la barra de navegación de 72px
+          maxLength: Math.min(height * 0.42, 270),
           descending: i === 0,
-          speed: Math.random() * 0.3 + 0.2,
-          swingAngle: i === 0 ? 0 : 0.4,
+          speed: 0.26 + (i * 0.04),
+          swingAngle: i === 0 ? 0 : 0.35,
           swingSpeed: 0.018 + (i * 0.004),
           size: (Math.random() * 1.5 + 4.5) * 3, // +300% de tamaño
         });
@@ -277,56 +275,61 @@ export default function FestiveCanvasOverlay() {
       const spiderX = anchorX + Math.sin(swingAngle) * 15;
       const spiderY = currentLength;
 
-      bgCtx.save();
+      fgCtx.save();
       // Hilo de seda blanco/plata brillante
-      bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
-      bgCtx.lineWidth = 1.4;
-      bgCtx.beginPath();
-      bgCtx.moveTo(anchorX, 0);
-      bgCtx.lineTo(spiderX, spiderY);
-      bgCtx.stroke();
+      fgCtx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+      fgCtx.lineWidth = 1.6;
+      fgCtx.beginPath();
+      fgCtx.moveTo(anchorX, 0);
+      fgCtx.lineTo(spiderX, spiderY);
+      fgCtx.stroke();
 
       // Cuerpo de araña blanca / espectral (+300% de tamaño)
-      bgCtx.translate(spiderX, spiderY);
+      fgCtx.translate(spiderX, spiderY);
       // Abdomen blanco aperlado con sombra suave
-      bgCtx.fillStyle = 'rgba(245, 245, 250, 0.96)';
-      bgCtx.beginPath();
-      bgCtx.arc(0, size * 0.4, size * 0.6, 0, Math.PI * 2);
-      bgCtx.fill();
+      fgCtx.fillStyle = 'rgba(245, 245, 250, 0.98)';
+      fgCtx.shadowColor = 'rgba(255, 117, 24, 0.6)';
+      fgCtx.shadowBlur = 10;
+      fgCtx.beginPath();
+      fgCtx.arc(0, size * 0.4, size * 0.6, 0, Math.PI * 2);
+      fgCtx.fill();
       // Cefalotórax blanco
-      bgCtx.beginPath();
-      bgCtx.arc(0, -size * 0.2, size * 0.4, 0, Math.PI * 2);
-      bgCtx.fill();
+      fgCtx.beginPath();
+      fgCtx.arc(0, -size * 0.2, size * 0.4, 0, Math.PI * 2);
+      fgCtx.fill();
+
+      // Reset shadow for crisp legs and details
+      fgCtx.shadowBlur = 0;
 
       // 8 Patas arqueadas blancas bien visibles
-      bgCtx.strokeStyle = 'rgba(240, 240, 248, 0.95)';
-      bgCtx.lineWidth = 2.4;
+      fgCtx.strokeStyle = 'rgba(245, 245, 255, 0.98)';
+      fgCtx.lineWidth = 2.4;
       const legOffsets = [-0.4, -0.1, 0.2, 0.5];
       legOffsets.forEach((off, idx) => {
         // Pata izquierda
-        bgCtx.beginPath();
-        bgCtx.moveTo(-size * 0.2, off * size);
-        bgCtx.quadraticCurveTo(-size * 1.4, off * size - size * 0.6, -size * 1.8, off * size + (idx % 2 === 0 ? size : -size * 0.3));
-        bgCtx.stroke();
+        fgCtx.beginPath();
+        fgCtx.moveTo(-size * 0.2, off * size);
+        fgCtx.quadraticCurveTo(-size * 1.4, off * size - size * 0.6, -size * 1.8, off * size + (idx % 2 === 0 ? size : -size * 0.3));
+        fgCtx.stroke();
         // Pata derecha
-        bgCtx.beginPath();
-        bgCtx.moveTo(size * 0.2, off * size);
-        bgCtx.quadraticCurveTo(size * 1.4, off * size - size * 0.6, size * 1.8, off * size + (idx % 2 === 0 ? size : -size * 0.3));
-        bgCtx.stroke();
+        fgCtx.beginPath();
+        fgCtx.moveTo(size * 0.2, off * size);
+        fgCtx.quadraticCurveTo(size * 1.4, off * size - size * 0.6, size * 1.8, off * size + (idx % 2 === 0 ? size : -size * 0.3));
+        fgCtx.stroke();
       });
 
       // Marca en la espalda: detalle naranja / rojo calabaza
-      bgCtx.fillStyle = 'rgba(255, 117, 24, 0.95)';
-      bgCtx.beginPath();
-      bgCtx.arc(0, size * 0.38, size * 0.2, 0, Math.PI * 2);
-      bgCtx.fill();
+      fgCtx.fillStyle = 'rgba(255, 117, 24, 0.95)';
+      fgCtx.beginPath();
+      fgCtx.arc(0, size * 0.38, size * 0.2, 0, Math.PI * 2);
+      fgCtx.fill();
 
       // Ojos diminutos rojos intimidantes
-      bgCtx.fillStyle = 'rgba(255, 30, 30, 0.95)';
-      bgCtx.fillRect(-3, -size * 0.28, 2.5, 2.5);
-      bgCtx.fillRect(1, -size * 0.28, 2.5, 2.5);
+      fgCtx.fillStyle = 'rgba(255, 30, 30, 0.95)';
+      fgCtx.fillRect(-3, -size * 0.28, 2.5, 2.5);
+      fgCtx.fillRect(1, -size * 0.28, 2.5, 2.5);
 
-      bgCtx.restore();
+      fgCtx.restore();
     };
 
     // ─── BUCLE DE RENDERIZADO ───────────────────────────────────────────
@@ -380,13 +383,13 @@ export default function FestiveCanvasOverlay() {
             p.currentLength += p.speed;
             if (p.currentLength >= p.maxLength) {
               p.descending = false;
-              p.maxLength = Math.random() * (height * 0.5) + 80;
+              p.maxLength = Math.min(height * 0.42, 270);
             }
           } else {
             p.currentLength -= p.speed;
             if (p.currentLength <= p.minLength) {
               p.descending = true;
-              p.minLength = Math.random() * 15 + 85;
+              p.minLength = Math.random() * 15 + 95;
             }
           }
           p.swingAngle += p.swingSpeed;

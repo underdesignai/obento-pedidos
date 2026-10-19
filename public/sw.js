@@ -1,7 +1,6 @@
-const CACHE_NAME = 'obento-pedidos-pwa-v1';
+const CACHE_NAME = 'obento-pedidos-pwa-v4';
 
 const PRECACHE_ASSETS = [
-  '/',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
@@ -46,7 +45,12 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === 'basic' &&
+          event.request.mode !== 'navigate'
+        ) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
@@ -57,10 +61,6 @@ self.addEventListener('fetch', (event) => {
       .catch(async () => {
         const cachedResponse = await caches.match(event.request);
         if (cachedResponse) return cachedResponse;
-        
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
       })
   );
 });
