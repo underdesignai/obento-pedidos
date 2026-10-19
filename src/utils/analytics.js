@@ -27,12 +27,12 @@ function getSessionId() {
   }
 }
 
-export function trackEvent(tipo, data = {}) {
+export function trackEvent(tipo, data = {}, force = false) {
   if (typeof window === 'undefined') return;
 
-  // VERIFICACIÓN ESTRICTA DE CONSENTIMIENTO (LSSI-CE Art. 22.2 / AEPD)
-  if (!hasAnalyticsConsent()) {
-    // Si el usuario no ha otorgado consentimiento expreso para analítica, abortar de forma silenciosa
+  // VERIFICACIÓN DE CONSENTIMIENTO (LSSI-CE Art. 22.2 / AEPD)
+  // Salvo para acciones técnicas expresas solicitadas directamente por el usuario (ej. instalar la aplicación)
+  if (!force && !hasAnalyticsConsent()) {
     return;
   }
 
@@ -110,3 +110,28 @@ export function trackOrderCompleted(pedido) {
     }
   });
 }
+
+export function trackAppInstall(data = {}) {
+  const isIOS = typeof window !== 'undefined' && /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+  const isAndroid = typeof window !== 'undefined' && /android/.test(window.navigator.userAgent.toLowerCase());
+  const platform = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+
+  let clientInfo = {};
+  try {
+    const saved = localStorage.getItem('obento_last_customer');
+    if (saved) clientInfo = JSON.parse(saved);
+  } catch (_) {}
+
+  trackEvent('app_install', {
+    pagina: typeof window !== 'undefined' ? window.location.pathname : '/pedidos',
+    metadata: {
+      platform,
+      standalone: typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true),
+      clienteNombre: clientInfo.nombre || null,
+      clienteTelefono: clientInfo.telefono || null,
+      clienteEmail: clientInfo.email || null,
+      ...data
+    }
+  }, true);
+}
+

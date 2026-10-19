@@ -165,6 +165,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
         clearCart();
         setIsCheckoutOpen(false);
+        try {
+          localStorage.setItem('obento_last_customer', JSON.stringify({ nombre, telefono, email }));
+        } catch (_) {}
         trackOrderCompleted({
           ...data.pedido,
           metodo_pago: 'restaurante'

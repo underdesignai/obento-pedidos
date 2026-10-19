@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { trackAppInstall } from '../utils/analytics';
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -26,17 +27,25 @@ export default function InstallPrompt() {
       window.navigator.standalone === true ||
       localStorage.getItem('obento_app_installed') === 'true';
 
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isIosDevice);
+
     if (isStandalone) {
       setIsInstalled(true);
       try {
         localStorage.setItem('obento_app_installed', 'true');
+        // Registrar en estadísticas si es la primera vez que se detecta en modo app
+        if (!localStorage.getItem('obento_install_reported')) {
+          localStorage.setItem('obento_install_reported', 'true');
+          trackAppInstall({
+            platform: isIosDevice ? 'iOS' : 'Android',
+            method: 'standalone_launch'
+          });
+        }
       } catch (_) {}
       return;
     }
-
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
-    setIsIOS(isIosDevice);
 
     const handleBeforeInstall = (e) => {
       e.preventDefault();
@@ -51,6 +60,11 @@ export default function InstallPrompt() {
       setDeferredPrompt(null);
       try {
         localStorage.setItem('obento_app_installed', 'true');
+        localStorage.setItem('obento_install_reported', 'true');
+        trackAppInstall({
+          platform: isIosDevice ? 'iOS' : 'Android',
+          method: 'appinstalled_event'
+        });
       } catch (_) {}
     });
 
@@ -62,6 +76,10 @@ export default function InstallPrompt() {
   const handleInstallClick = async () => {
     if (isIOS) {
       setShowIOSModal(true);
+      // En iOS Safari no hay evento prompt nativo, el usuario abre el modal con las instrucciones
+      try {
+        trackAppInstall({ platform: 'iOS', method: 'ios_instructions_view' });
+      } catch (_) {}
       return;
     }
 
@@ -72,6 +90,8 @@ export default function InstallPrompt() {
         setIsInstalled(true);
         try {
           localStorage.setItem('obento_app_installed', 'true');
+          localStorage.setItem('obento_install_reported', 'true');
+          trackAppInstall({ platform: 'Android', method: 'prompt_accepted' });
         } catch (_) {}
       }
       setDeferredPrompt(null);
