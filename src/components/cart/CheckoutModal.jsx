@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { trackOrderCompleted } from '../../utils/analytics';
 import { formatWhatsAppOrderMessage } from '../../utils/whatsappOrder';
@@ -54,6 +54,20 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [errorMsg, setErrorMsg] = useState('');
 
   const isBajoMinimoDomicilio = tipoEntrega === 'domicilio' && finalPrice < 25;
+
+  // Bloquear el scroll de la página de fondo mientras el modal de checkout está abierto
+  useEffect(() => {
+    if (!isCheckoutOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscroll = document.body.style.overscrollBehavior;
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscroll;
+    };
+  }, [isCheckoutOpen]);
 
   if (!isCheckoutOpen) return null;
 

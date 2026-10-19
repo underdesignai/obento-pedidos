@@ -4205,19 +4205,24 @@ img {
 .checkout-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 1100;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: clamp(12px, 3vh, 24px) 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: fadeIn 0.2s ease;
 }
 
 .checkout-modal {
   width: 100%;
   max-width: 1040px;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
   background: #181410;
   border: 1px solid var(--c-line);
   border-radius: 22px;
@@ -4225,6 +4230,26 @@ img {
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+/* Scrollbar personalizada para el popup de checkout */
+.checkout-modal::-webkit-scrollbar {
+  width: 7px;
+}
+.checkout-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+.checkout-modal::-webkit-scrollbar-thumb {
+  background: rgba(200, 30, 34, 0.45);
+  border-radius: 8px;
+}
+.checkout-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 30, 34, 0.85);
 }
 
 .checkout-form {
