@@ -71,12 +71,6 @@ html {
   height: 100%;
 }
 
-/* Escala global al 125% para desktop/portátiles (solicitado: vista nativa al 100% equivalente al zoom 125% de Chrome) */
-@media (min-width: 1024px) {
-  html {
-    zoom: 1.25;
-  }
-}
 
 body {
   background: var(--c-bg);
