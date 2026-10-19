@@ -331,41 +331,58 @@ export default function PedidosPage() {
 
       {/* Hero Banner de Pedidos */}
       <section className="pedidos-hero-banner">
-        <div className="section-container">
-          <div className="pedidos-hero-content">
-            <div className="section-eyebrow-dot">
-              <span className="dot"></span>
-              <span>{isHalloween ? '🦇 Especial Halloween · La Ñora (Murcia)' : 'Servicio Takeaway · La Ñora (Murcia)'}</span>
+        <div className="hero-glow"></div>
+        <div className="hero-container pedidos-hero-container">
+          <div className="hero-content">
+            <div className="hero-badge">
+              <span className="badge-icon-dot"></span>
+              <span className="badge-text-primary">
+                {isHalloween ? '🦇 ESPECIAL HALLOWEEN' : '100% TAKE AWAY & RECOGIDA'}
+              </span>
+              <span className="badge-divider">·</span>
+              <span className="badge-text-sub">
+                {isHalloween ? 'La Ñora (Murcia)' : 'Recogida en Local · La Ñora'}
+              </span>
             </div>
-            <h1 className="pedidos-hero-title">
+
+            <h1 className="hero-title pedidos-hero-title">
               {isHalloween ? (
                 <>
-                  El Sushi más <span style={{ color: '#ff7518', textShadow: '0 0 20px rgba(255,117,24,0.45)' }}>Tenebroso</span> de Murcia
+                  El Sushi más <span className="text-gold" style={{ color: '#ff7518', textShadow: '0 0 20px rgba(255,117,24,0.45)' }}>Tenebroso</span> de Murcia
                 </>
               ) : (
-                'Haz tu Pedido Online'
+                <>
+                  Haz tu Pedido Online en <span className="text-gold">Obento</span>
+                </>
               )}
             </h1>
-            <p className="pedidos-hero-desc">
+
+            <p className="hero-lead pedidos-hero-lead">
               {isHalloween ? (
-                'Edición especial de Halloween: platos artesanales preparados al momento con el misterio y la esencia más oscura de Japón. ¡Haz tu pedido ahora!'
+                'Edición especial de Halloween en Obento: delicias japonesas con el toque más oscuro, artesanal y exquisito. ¡Haz tu pedido ahora!'
               ) : (
                 'Toda nuestra carta artesanal preparada al momento. Elige tus platos, personaliza tus porciones y recoge en Calle Amargura, 3 (La Ñora) recién salido de cocina.'
               )}
             </p>
 
-            <div className="pedidos-highlights-row">
-              <div className="pedidos-highlight-chip">
-                <span>⏱️</span>
+            <div className="hero-seals pedidos-hero-seals">
+              <div className="seal-item">
+                <div className="seal-icon">
+                  <span>⏱️</span>
+                </div>
                 <span>Preparación: ~25 - 35 min</span>
               </div>
-              <div className="pedidos-highlight-chip">
-                <span>💳</span>
+              <div className="seal-item">
+                <div className="seal-icon">
+                  <span>💳</span>
+                </div>
                 <span>Pago con Tarjeta Online (Stripe) o al Recoger</span>
               </div>
-              <div className="pedidos-highlight-chip">
-                <span>📍</span>
-                <span>Recogida en Local: C/ Amargura 3, La Ñora</span>
+              <div className="seal-item">
+                <div className="seal-icon">
+                  <span>📍</span>
+                </div>
+                <span>Recogida: C/ Amargura 3, La Ñora</span>
               </div>
             </div>
           </div>
