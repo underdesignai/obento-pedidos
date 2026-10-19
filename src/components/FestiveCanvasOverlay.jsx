@@ -25,7 +25,10 @@ export default function FestiveCanvasOverlay() {
     const handleResize = () => {
       width = bgCanvas.width = fgCanvas.width = window.innerWidth;
       height = bgCanvas.height = fgCanvas.height = window.innerHeight;
-      const spiderPositions = width < 768 ? [width * 0.10] : [width * 0.11, width * 0.89];
+      const spiderPositions = [
+        width < 768 ? Math.max(30, width * 0.10) : Math.max(60, width * 0.11),
+        width < 768 ? Math.min(width - 30, width * 0.90) : Math.min(width - 60, width * 0.89)
+      ];
       let spIdx = 0;
       particles.forEach((p) => {
         if (p.type === 'hanging_spider') {
@@ -80,13 +83,13 @@ export default function FestiveCanvasOverlay() {
         });
       }
 
-      // 3. Arañas colgantes (desplazadas hacia los laterales para no interferir con logo ni texto central)
-      const spiderCount = width < 768 ? 1 : 2;
-      const spiderPositions = width < 768
-        ? [width * 0.10]
-        : [width * 0.11, width * 0.89];
+      // 3. Arañas colgantes: SIEMPRE 2 (izquierda y derecha en todos los tamaños)
+      const spiderPositions = [
+        width < 768 ? Math.max(30, width * 0.10) : Math.max(60, width * 0.11),
+        width < 768 ? Math.min(width - 30, width * 0.90) : Math.min(width - 60, width * 0.89)
+      ];
 
-      for (let i = 0; i < spiderCount; i++) {
+      for (let i = 0; i < 2; i++) {
         particles.push({
           type: 'hanging_spider',
           anchorX: spiderPositions[i],
@@ -94,9 +97,9 @@ export default function FestiveCanvasOverlay() {
           targetLength: Math.random() * (height * 0.38) + 80,
           minLength: 35,
           maxLength: Math.random() * (height * 0.48) + 100,
-          descending: true,
-          speed: Math.random() * 0.35 + 0.15,
-          swingAngle: 0,
+          descending: i % 2 === 0,
+          speed: Math.random() * 0.35 + 0.18,
+          swingAngle: i === 0 ? 0 : Math.PI / 4,
           swingSpeed: 0.015 + Math.random() * 0.01,
           size: (Math.random() * 1.5 + 4.5) * 3, // +300% de tamaño
         });
@@ -335,6 +338,7 @@ export default function FestiveCanvasOverlay() {
       // Renderizadas en bgCtx (z-index: 4, por debajo de tarjetas y botones)
       if (themeConfig.theme === 'halloween') {
         drawCornerWeb(0, 0, 1, 1); // Esquina superior izquierda
+        drawCornerWeb(width, 0, -1, 1); // Esquina superior derecha
         drawCornerWeb(width, height, -1, -1); // Esquina inferior derecha
       }
 
