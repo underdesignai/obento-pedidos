@@ -154,10 +154,10 @@ async function getStripePublishableKey() {
 export const CODIGOS_POSTALES_REPARTO = {
   '30830': 'La Ñora / UCAM',
   '30107': 'Guadalupe',
-  '30831': 'Javalí Viejo',
-  '30832': 'Javalí Nuevo',
-  '30836': 'Puebla de Soto',
-  '30108': 'Rincón de Beniscornia'
+  '30831': 'Javalí V.',
+  '30832': 'Javalí N.',
+  '30836': 'Pueba Soto',
+  '30108': 'R.Benisconia'
 };
 
 // Fallback en memoria para desarrollo si PostgreSQL no está encendido

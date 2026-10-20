@@ -8,12 +8,12 @@ function fmt(n) {
 }
 
 export const ZONAS_REPARTO_PERMITIDAS = [
-  { cp: '30830', nombre: 'La Ñora / UCAM' },
-  { cp: '30107', nombre: 'Guadalupe' },
-  { cp: '30831', nombre: 'Javalí Viejo' },
-  { cp: '30832', nombre: 'Javalí Nuevo' },
-  { cp: '30836', nombre: 'Puebla de Soto' },
-  { cp: '30108', nombre: 'Rincón de Beniscornia' }
+  { cp: '30830', nombre: 'La Ñora / UCAM', label: '30830 (La Ñora / UCAM)' },
+  { cp: '30107', nombre: 'Guadalupe', label: '30107 (Guadalupe)' },
+  { cp: '30831', nombre: 'Javalí V.', label: '30831 (Javalí V.)' },
+  { cp: '30832', nombre: 'Javalí N.', label: '30832 (Javalí N.)' },
+  { cp: '30836', nombre: 'Pueba Soto', label: '30836 (Pueba Soto)' },
+  { cp: '30108', nombre: 'R.Benisconia', label: '30108 (R.Benisconia)' }
 ];
 
 export const CODIGOS_REPARTO_MAP = Object.fromEntries(
@@ -406,76 +406,34 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         />
                       </div>
                       <div className="form-field-compact">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <label>Código Postal (Radio 5 km) *</label>
-                          {zonaRepartoDetectada && (
-                            <span style={{ fontSize: '10.5px', color: '#4ade80', fontWeight: 700 }}>
-                              ✓ {zonaRepartoDetectada}
-                            </span>
-                          )}
-                        </div>
-                        <input
-                          type="text"
-                          placeholder="30830"
-                          maxLength={5}
+                        <label>Código Postal y Población (Radio 5 km) *</label>
+                        <select
                           value={codigoPostal}
-                          onChange={(e) => setCodigoPostal(e.target.value.replace(/\D/g, '').slice(0, 5))}
-                          autoComplete="postal-code"
+                          onChange={(e) => setCodigoPostal(e.target.value)}
                           disabled={loading}
+                          required={tipoEntrega === 'domicilio'}
                           style={{
-                            borderColor: !isCpValidoDomicilio && cpLimpio.length >= 5 ? '#ef4444' : undefined
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: '7px',
+                            padding: '6px 26px 6px 10px',
+                            fontSize: '12px',
+                            color: '#ffffff',
+                            height: '35px',
+                            outline: 'none',
+                            cursor: 'pointer',
+                            width: '100%',
+                            boxSizing: 'border-box'
                           }}
-                        />
+                        >
+                          {ZONAS_REPARTO_PERMITIDAS.map((z) => (
+                            <option key={z.cp} value={z.cp} style={{ background: '#1c1815', color: '#ffffff' }}>
+                              {z.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
-
-                    {/* Selector interactivo de poblaciones autorizadas en el radio */}
-                    <div style={{ marginTop: '10px' }}>
-                      <div style={{ fontSize: '11px', color: '#a0998f', marginBottom: '6px', fontWeight: 600 }}>
-                        Zonas con entrega a domicilio (radio 5 km):
-                      </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                        {ZONAS_REPARTO_PERMITIDAS.map((z) => {
-                          const isActivo = cpLimpio === z.cp;
-                          return (
-                            <button
-                              key={z.cp}
-                              type="button"
-                              onClick={() => setCodigoPostal(z.cp)}
-                              style={{
-                                fontSize: '11px',
-                                padding: '4px 8px',
-                                borderRadius: '7px',
-                                border: isActivo ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.12)',
-                                background: isActivo ? 'rgba(74, 222, 128, 0.18)' : 'rgba(255,255,255,0.04)',
-                                color: isActivo ? '#4ade80' : '#d1d5db',
-                                fontWeight: isActivo ? 700 : 500,
-                                cursor: 'pointer',
-                                transition: 'all 0.15s ease'
-                              }}
-                            >
-                              {z.cp} · {z.nombre}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Alerta visible si el CP no está en la zona de cobertura */}
-                    {!isCpValidoDomicilio && (
-                      <div style={{
-                        marginTop: '10px',
-                        padding: '9px 12px',
-                        borderRadius: '8px',
-                        background: 'rgba(239, 68, 68, 0.15)',
-                        border: '1px solid rgba(239, 68, 68, 0.4)',
-                        color: '#fca5a5',
-                        fontSize: '11.5px',
-                        lineHeight: 1.4
-                      }}>
-                        ⚠️ <strong>Código postal fuera de zona de reparto:</strong> El código postal {cpLimpio || 'indicado'} está a más de 5 km de nuestro local en La Ñora. Solo repartimos a: 30830 (La Ñora/UCAM), 30107 (Guadalupe), 30831 (Javalí Viejo), 30832 (Javalí Nuevo), 30836 (Puebla de Soto) y 30108 (Rincón de Beniscornia). Para otras zonas selecciona <strong>🥡 Recogida en local</strong>.
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div className="modalidad-slot-box takeaway">
