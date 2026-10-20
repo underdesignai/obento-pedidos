@@ -406,7 +406,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         />
                       </div>
                       <div className="form-field-compact">
-                        <label>Código Postal y Población (Radio 5 km) *</label>
+                        <label>C. Postal (Max 5km) *</label>
                         <select
                           value={codigoPostal}
                           onChange={(e) => setCodigoPostal(e.target.value)}
