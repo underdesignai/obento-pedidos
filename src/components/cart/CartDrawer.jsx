@@ -2,6 +2,18 @@ import React from 'react';
 import { useCart } from '../../context/CartContext';
 import { formatWhatsAppOrderMessage } from '../../utils/whatsappOrder';
 
+
+function getProximoMiercolesTexto() {
+  const d = new Date();
+  const day = d.getDay(); // 0: Dom, 1: Lun, 2: Mar, 3: Mie...
+  const daysUntilWed = (3 - day + 7) % 7 || 7;
+  const wed = new Date(d);
+  wed.setDate(d.getDate() + daysUntilWed);
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  const str = wed.toLocaleDateString('es-ES', options);
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
 }
@@ -25,6 +37,10 @@ export default function CartDrawer() {
     removeCoupon,
     setIsCheckoutOpen
   } = useCart();
+
+  const todayDay = new Date().getDay();
+  const isLunesOMartes = todayDay === 1 || todayDay === 2;
+  const proximoMiercoles = getProximoMiercolesTexto();
 
   const [couponCode, setCouponCode] = React.useState('');
   const [tiendaEstado, setTiendaEstado] = React.useState({
@@ -263,6 +279,45 @@ export default function CartDrawer() {
             <p className="cart-terms-note">
               Preparación artesanal al momento en nuestro local de La Ñora.
             </p>
+                        {/* Aviso parpadeante si es lunes o martes (descanso) */}
+            {isLunesOMartes && (
+              <>
+                <style>{`
+                  @keyframes pulseAvisoLunesMartes {
+                    0%, 100% {
+                      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+                      border-color: #ef4444;
+                    }
+                    50% {
+                      box-shadow: 0 0 16px 3px rgba(239, 68, 68, 0.75);
+                      border-color: #f87171;
+                    }
+                  }
+                `}</style>
+                <div style={{
+                  background: 'rgba(239, 68, 68, 0.16)',
+                  border: '1.5px solid #ef4444',
+                  borderRadius: '10px',
+                  padding: '12px 14px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  animation: 'pulseAvisoLunesMartes 1.8s infinite ease-in-out'
+                }}>
+                  <span style={{ fontSize: '20px', lineHeight: 1 }}>⚠️</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ color: '#f87171', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Restaurante cerrado lunes y martes
+                    </div>
+                    <div style={{ color: '#fecaca', fontSize: '11.5px', marginTop: '3px', lineHeight: 1.4 }}>
+                      Lunes y martes cerramos por descanso. Tu pedido será preparado y entregado el <strong>próximo Miércoles ({proximoMiercoles})</strong> a la hora que elijas.
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
             {!tiendaEstado.activo ? (
               <div style={{
                 background: 'rgba(239, 68, 68, 0.12)',

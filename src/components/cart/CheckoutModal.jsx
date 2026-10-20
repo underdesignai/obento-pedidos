@@ -30,6 +30,31 @@ const HORAS_DISPONIBLES = [
   { label: 'Para cenar a las 22:30h', val: 'Para cenar a las 22:30h', icon: '🍣' }
 ];
 
+
+const HORAS_MIERCOLES = [
+  { label: 'Miércoles a las 18:30h', val: 'Miércoles a las 18:30h', icon: '🍣' },
+  { label: 'Miércoles a las 19:00h', val: 'Miércoles a las 19:00h', icon: '🍣' },
+  { label: 'Miércoles a las 19:30h', val: 'Miércoles a las 19:30h', icon: '🍣' },
+  { label: 'Miércoles a las 20:00h', val: 'Miércoles a las 20:00h', icon: '🍣' },
+  { label: 'Miércoles a las 20:30h', val: 'Miércoles a las 20:30h', icon: '🍣' },
+  { label: 'Miércoles a las 21:00h', val: 'Miércoles a las 21:00h', icon: '🍣' },
+  { label: 'Miércoles a las 21:30h', val: 'Miércoles a las 21:30h', icon: '🍣' },
+  { label: 'Miércoles a las 22:00h', val: 'Miércoles a las 22:00h', icon: '🍣' },
+  { label: 'Miércoles a las 22:30h', val: 'Miércoles a las 22:30h', icon: '🍣' },
+  { label: 'Miércoles a las 23:00h', val: 'Miércoles a las 23:00h', icon: '🍣' }
+];
+
+function getProximoMiercolesTextoCheckout() {
+  const d = new Date();
+  const day = d.getDay();
+  const daysUntilWed = (3 - day + 7) % 7 || 7;
+  const wed = new Date(d);
+  wed.setDate(d.getDate() + daysUntilWed);
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  const str = wed.toLocaleDateString('es-ES', options);
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default function CheckoutModal({ onOrderSuccess }) {
   const {
     cart,
@@ -50,7 +75,15 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
-  const [horaRecogida, setHoraRecogida] = useState('Lo antes posible (~35-45 min)');
+    const todayDay = new Date().getDay();
+  const isLunesOMartes = todayDay === 1 || todayDay === 2;
+  const proximoMiercoles = getProximoMiercolesTextoCheckout();
+  const horasActivas = isLunesOMartes ? HORAS_MIERCOLES : HORAS_DISPONIBLES;
+
+  const [horaRecogida, setHoraRecogida] = useState(() => {
+    const d = new Date().getDay();
+    return (d === 1 || d === 2) ? 'Miércoles a las 18:30h' : 'Lo antes posible (~35-45 min)';
+  });
   const [isHoraDropdownOpen, setIsHoraDropdownOpen] = useState(false);
   const [notas, setNotas] = useState('');
   const [metodoPago, setMetodoPago] = useState('stripe'); // 'stripe' | 'restaurante'
@@ -470,6 +503,23 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     </span>
                   </label>
 
+                                    {isLunesOMartes && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.14)',
+                      border: '1px solid rgba(239, 68, 68, 0.45)',
+                      borderRadius: '8px',
+                      padding: '9px 12px',
+                      marginBottom: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <span style={{ fontSize: '16px' }}>📅</span>
+                      <span style={{ fontSize: '12px', color: '#fca5a5', fontWeight: 600 }}>
+                        Día de recogida/entrega: <strong style={{ color: '#fff' }}>{proximoMiercoles}</strong> (18:30 a 23:00)
+                      </span>
+                    </div>
+                  )}
                   <div className="custom-dropdown-wrap">
                     <button
                       type="button"
@@ -479,7 +529,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     >
                       <div className="dropdown-trigger-left">
                         <span className="dropdown-trigger-ico">
-                          {HORAS_DISPONIBLES.find((h) => h.val === horaRecogida)?.icon || '🕒'}
+                          {horasActivas.find((h) => h.val === horaRecogida)?.icon || '🕒'}
                         </span>
                         <span className="dropdown-trigger-text">{horaRecogida}</span>
                       </div>
@@ -492,7 +542,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
                     {isHoraDropdownOpen && (
                       <div className="custom-dropdown-menu">
-                        {HORAS_DISPONIBLES.map((h) => {
+                        {horasActivas.map((h) => {
                           const isSelected = horaRecogida === h.val;
                           return (
                             <button
