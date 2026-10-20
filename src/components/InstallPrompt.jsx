@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { trackAppInstall } from '../utils/analytics';
+import { useCart } from '../context/CartContext';
 
 export default function InstallPrompt() {
+  const { totalCount } = useCart();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isIOS, setIsIOS] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
@@ -9,8 +11,7 @@ export default function InstallPrompt() {
     return (
       typeof window !== 'undefined' &&
       (window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true ||
-        localStorage.getItem('obento_app_installed') === 'true')
+        window.navigator.standalone === true)
     );
   });
   const [dismissed, setDismissed] = useState(() => {
@@ -24,8 +25,7 @@ export default function InstallPrompt() {
     // Si ya está ejecutándose como PWA instalada en pantalla de inicio
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true ||
-      localStorage.getItem('obento_app_installed') === 'true';
+      window.navigator.standalone === true;
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
@@ -45,6 +45,11 @@ export default function InstallPrompt() {
         }
       } catch (_) {}
       return;
+    } else {
+      // Si está en el navegador web estándar, limpiar bloqueo previo para asegurar que se muestre
+      try {
+        localStorage.removeItem('obento_app_installed');
+      } catch (_) {}
     }
 
     const handleBeforeInstall = (e) => {
@@ -52,7 +57,13 @@ export default function InstallPrompt() {
       setDeferredPrompt(e);
     };
 
+    const handleOpenInstall = () => {
+      setDismissed(false);
+      setShowIOSModal(true);
+    };
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('open_install_prompt', handleOpenInstall);
 
     // Evento oficial del navegador cuando la app se instala con éxito
     window.addEventListener('appinstalled', () => {
@@ -70,6 +81,7 @@ export default function InstallPrompt() {
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('open_install_prompt', handleOpenInstall);
     };
   }, []);
 
@@ -112,7 +124,7 @@ export default function InstallPrompt() {
   return (
     <>
       {/* Píldora flotante fija al final de la página */}
-      <aside className="obento-install-pill" aria-label="Instalar aplicación de Obento">
+      <aside className={`obento-install-pill ${totalCount > 0 ? 'has-floating-cart' : ''}`} aria-label="Instalar aplicación de Obento">
         <div className="obento-install-left">
           <div className="obento-install-logo-wrap">
             <img

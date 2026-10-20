@@ -322,6 +322,27 @@ export default function CartDrawer() {
                 </svg>
               </button>
             )}
+
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open_install_prompt'))}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#a0998f',
+                fontSize: '11.5px',
+                padding: '8px 0 0',
+                width: '100%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+            >
+              <span>📱</span>
+              <span style={{ textDecoration: 'underline' }}>Instalar App Obento en mi móvil</span>
+            </button>
           </div>
         )}
       </aside>

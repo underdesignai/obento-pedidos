@@ -285,23 +285,9 @@ export default function PedidosPage() {
           <FestiveBanner />
 
           <div className="nav-actions">
-            <a
-              href="https://obentojapanesefood.es"
-              className="btn-secondary-outline nav-back-btn"
-              style={{ textDecoration: 'none' }}
-              title="Volver a la web principal (obentojapanesefood.es)"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="btn-ico-svg">
-                <line x1="19" y1="12" x2="5" y2="12" />
-                <polyline points="12 19 5 12 12 5" />
-              </svg>
-              <span className="nav-back-text-full">Web Principal</span>
-              <span className="nav-back-text-short">Web</span>
-            </a>
-
             <button
               type="button"
-              className="icon-btn nav-allergen-btn"
+              className="icon-btn nav-allergen-btn hide-on-mobile"
               title="Guía de Alérgenos"
               aria-label="Alérgenos"
               onClick={() => setIsAllergenOpen(true)}
