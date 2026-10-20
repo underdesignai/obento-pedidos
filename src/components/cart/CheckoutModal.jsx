@@ -7,6 +7,19 @@ function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
 }
 
+export const ZONAS_REPARTO_PERMITIDAS = [
+  { cp: '30830', nombre: 'La Ñora / UCAM' },
+  { cp: '30107', nombre: 'Guadalupe' },
+  { cp: '30831', nombre: 'Javalí Viejo' },
+  { cp: '30832', nombre: 'Javalí Nuevo' },
+  { cp: '30836', nombre: 'Puebla de Soto' },
+  { cp: '30108', nombre: 'Rincón de Beniscornia' }
+];
+
+export const CODIGOS_REPARTO_MAP = Object.fromEntries(
+  ZONAS_REPARTO_PERMITIDAS.map(z => [z.cp, z.nombre])
+);
+
 const HORAS_DISPONIBLES = [
   { label: 'Lo antes posible (~35-45 min)', val: 'Lo antes posible (~35-45 min)', icon: '⚡' },
   { label: 'En 1 hora', val: 'En 1 hora', icon: '🕒' },
@@ -53,6 +66,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const cpLimpio = String(codigoPostal || '').trim();
+  const zonaRepartoDetectada = CODIGOS_REPARTO_MAP[cpLimpio];
+  const isCpValidoDomicilio = tipoEntrega !== 'domicilio' || Boolean(zonaRepartoDetectada);
   const isBajoMinimoDomicilio = tipoEntrega === 'domicilio' && finalPrice < 25;
 
   // Bloquear el scroll de la página de fondo mientras el modal de checkout está abierto
@@ -106,18 +122,23 @@ export default function CheckoutModal({ onOrderSuccess }) {
     e.preventDefault();
     setErrorMsg('');
 
-    if (tipoEntrega === 'domicilio' && finalPrice < 25) {
-      setErrorMsg('El pedido mínimo para entrega a domicilio es de 25,00 €.');
-      return;
+    if (tipoEntrega === 'domicilio') {
+      if (finalPrice < 25) {
+        setErrorMsg('El pedido mínimo para entrega a domicilio es de 25,00 €.');
+        return;
+      }
+      if (!direccionEntrega.trim()) {
+        setErrorMsg('Por favor introduce la dirección completa para el reparto a domicilio.');
+        return;
+      }
+      if (!isCpValidoDomicilio) {
+        setErrorMsg(`El código postal indicado (${cpLimpio || 'no indicado'}) está fuera de nuestro radio de entrega a domicilio (5 km). Cobertura disponible: 30830 (La Ñora/UCAM), 30107 (Guadalupe), 30831 (Javalí Viejo), 30832 (Javalí Nuevo), 30836 (Puebla de Soto) y 30108 (Rincón de Beniscornia).`);
+        return;
+      }
     }
 
     if (!nombre.trim() || !telefono.trim()) {
       setErrorMsg('Por favor introduce tu nombre y un teléfono de contacto.');
-      return;
-    }
-
-    if (tipoEntrega === 'domicilio' && !direccionEntrega.trim()) {
-      setErrorMsg('Por favor introduce la dirección completa para el reparto a domicilio.');
       return;
     }
 
@@ -358,7 +379,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   <div className="modalidad-slot-box domicilio">
                     <div className="modalidad-slot-header">
                       <span>📍 Dirección de Entrega a Domicilio</span>
-                      <span className="modalidad-slot-tag domicilio">Reparto Obento</span>
+                      <span className="modalidad-slot-tag domicilio">Radio 5 km Obento</span>
                     </div>
                     <div className="form-field-compact">
                       <label>Calle, Avenida o Plaza y Número *</label>
@@ -385,17 +406,76 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         />
                       </div>
                       <div className="form-field-compact">
-                        <label>Código Postal</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <label>Código Postal (Radio 5 km) *</label>
+                          {zonaRepartoDetectada && (
+                            <span style={{ fontSize: '10.5px', color: '#4ade80', fontWeight: 700 }}>
+                              ✓ {zonaRepartoDetectada}
+                            </span>
+                          )}
+                        </div>
                         <input
                           type="text"
-                          placeholder="30830 (La Ñora/Murcia)"
+                          placeholder="30830"
+                          maxLength={5}
                           value={codigoPostal}
-                          onChange={(e) => setCodigoPostal(e.target.value)}
+                          onChange={(e) => setCodigoPostal(e.target.value.replace(/\D/g, '').slice(0, 5))}
                           autoComplete="postal-code"
                           disabled={loading}
+                          style={{
+                            borderColor: !isCpValidoDomicilio && cpLimpio.length >= 5 ? '#ef4444' : undefined
+                          }}
                         />
                       </div>
                     </div>
+
+                    {/* Selector interactivo de poblaciones autorizadas en el radio */}
+                    <div style={{ marginTop: '10px' }}>
+                      <div style={{ fontSize: '11px', color: '#a0998f', marginBottom: '6px', fontWeight: 600 }}>
+                        Zonas con entrega a domicilio (radio 5 km):
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                        {ZONAS_REPARTO_PERMITIDAS.map((z) => {
+                          const isActivo = cpLimpio === z.cp;
+                          return (
+                            <button
+                              key={z.cp}
+                              type="button"
+                              onClick={() => setCodigoPostal(z.cp)}
+                              style={{
+                                fontSize: '11px',
+                                padding: '4px 8px',
+                                borderRadius: '7px',
+                                border: isActivo ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.12)',
+                                background: isActivo ? 'rgba(74, 222, 128, 0.18)' : 'rgba(255,255,255,0.04)',
+                                color: isActivo ? '#4ade80' : '#d1d5db',
+                                fontWeight: isActivo ? 700 : 500,
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              {z.cp} · {z.nombre}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Alerta visible si el CP no está en la zona de cobertura */}
+                    {!isCpValidoDomicilio && (
+                      <div style={{
+                        marginTop: '10px',
+                        padding: '9px 12px',
+                        borderRadius: '8px',
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        color: '#fca5a5',
+                        fontSize: '11.5px',
+                        lineHeight: 1.4
+                      }}>
+                        ⚠️ <strong>Código postal fuera de zona de reparto:</strong> El código postal {cpLimpio || 'indicado'} está a más de 5 km de nuestro local en La Ñora. Solo repartimos a: 30830 (La Ñora/UCAM), 30107 (Guadalupe), 30831 (Javalí Viejo), 30832 (Javalí Nuevo), 30836 (Puebla de Soto) y 30108 (Rincón de Beniscornia). Para otras zonas selecciona <strong>🥡 Recogida en local</strong>.
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="modalidad-slot-box takeaway">
@@ -646,7 +726,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   </div>
                   <p className="checkout-location-info" style={{ margin: '6px 0 0' }}>
                     {tipoEntrega === 'domicilio'
-                      ? `🛵 Reparto a: ${direccionEntrega || 'Dirección indicada'} (${codigoPostal || '30830'}, Murcia)`
+                      ? `🛵 Reparto a: ${direccionEntrega || 'Dirección indicada'} (${codigoPostal || '30830'}${zonaRepartoDetectada ? ` · ${zonaRepartoDetectada}` : ''})`
                       : '📍 Recogida en: Calle Amargura 3, 30830 La Ñora, Murcia'}
                   </p>
                 </div>
@@ -682,15 +762,15 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
                 <button
                   type="submit"
-                  className={`btn-primary btn-block checkout-submit-btn ${isBajoMinimoDomicilio ? 'disabled' : ''}`}
-                  disabled={loading || isBajoMinimoDomicilio}
+                  className={`btn-primary btn-block checkout-submit-btn ${isBajoMinimoDomicilio || !isCpValidoDomicilio ? 'disabled' : ''}`}
+                  disabled={loading || isBajoMinimoDomicilio || !isCpValidoDomicilio}
                   style={{
                     padding: '14px',
                     width: '100%',
                     marginBottom: '6px',
-                    opacity: isBajoMinimoDomicilio ? 0.45 : 1,
-                    cursor: isBajoMinimoDomicilio ? 'not-allowed' : 'pointer',
-                    filter: isBajoMinimoDomicilio ? 'grayscale(0.6)' : 'none',
+                    opacity: (isBajoMinimoDomicilio || !isCpValidoDomicilio) ? 0.45 : 1,
+                    cursor: (isBajoMinimoDomicilio || !isCpValidoDomicilio) ? 'not-allowed' : 'pointer',
+                    filter: (isBajoMinimoDomicilio || !isCpValidoDomicilio) ? 'grayscale(0.6)' : 'none',
                     transition: 'all 0.2s'
                   }}
                 >
@@ -701,6 +781,10 @@ export default function CheckoutModal({ onOrderSuccess }) {
                       </svg>
                       <span>{metodoPago === 'stripe' ? 'Conectando con Stripe...' : 'Registrando pedido...'}</span>
                     </span>
+                  ) : !isCpValidoDomicilio ? (
+                    <span style={{ color: '#ffffff', fontWeight: 'bold', letterSpacing: '0.03em' }}>CP FUERA DE RADIO DE REPARTO (5 KM)</span>
+                  ) : isBajoMinimoDomicilio ? (
+                    <span style={{ color: '#ffffff', fontWeight: 'bold', letterSpacing: '0.03em' }}>MÍNIMO A DOMICILIO: 25,00 €</span>
                   ) : metodoPago === 'stripe' ? (
                     <span style={{ color: '#ffffff', fontWeight: 'bold', letterSpacing: '0.04em' }}>PAGAR CON TARJETA</span>
                   ) : (

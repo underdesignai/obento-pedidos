@@ -148,6 +148,18 @@ async function getStripePublishableKey() {
     : null;
 }
 
+// =========================================================
+// CÓDIGOS POSTALES AUTORIZADOS PARA ENTREGA A DOMICILIO (RADIO 5 KM)
+// =========================================================
+export const CODIGOS_POSTALES_REPARTO = {
+  '30830': 'La Ñora / UCAM',
+  '30107': 'Guadalupe',
+  '30831': 'Javalí Viejo',
+  '30832': 'Javalí Nuevo',
+  '30836': 'Puebla de Soto',
+  '30108': 'Rincón de Beniscornia'
+};
+
 // Fallback en memoria para desarrollo si PostgreSQL no está encendido
 const pedidosEnMemoria = [];
 
@@ -297,12 +309,19 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Nombre, teléfono y al menos un plato son obligatorios.' });
     }
 
-    if (tipo_entrega === 'domicilio' && !direccion_entrega) {
-      return res.status(400).json({ error: 'La dirección de entrega es obligatoria para pedidos a domicilio.' });
-    }
-
-    if (tipo_entrega === 'domicilio' && Number(total) < 25) {
-      return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+    if (tipo_entrega === 'domicilio') {
+      if (!direccion_entrega) {
+        return res.status(400).json({ error: 'La dirección de entrega es obligatoria para pedidos a domicilio.' });
+      }
+      if (Number(total) < 25) {
+        return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+      }
+      const cpLimpio = String(codigo_postal || req.body.codigoPostal || '').trim();
+      if (!CODIGOS_POSTALES_REPARTO[cpLimpio]) {
+        return res.status(400).json({
+          error: `El código postal (${cpLimpio || 'no indicado'}) está fuera del radio de reparto autorizado (5 km). Cobertura disponible: ${Object.entries(CODIGOS_POSTALES_REPARTO).map(([cp, z]) => `${cp} (${z})`).join(', ')}. Puedes pedir con recogida en local.`
+        });
+      }
     }
 
     const payload = {
@@ -428,8 +447,16 @@ app.post('/api/create-checkout-session', async (req, res) => {
       return res.status(400).json({ error: 'El carrito no tiene productos.' });
     }
 
-    if (tipo_entrega === 'domicilio' && Number(total) < 25) {
-      return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+    if (tipo_entrega === 'domicilio') {
+      if (Number(total) < 25) {
+        return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+      }
+      const cpLimpio = String(codigo_postal || codigoPostal || '').trim();
+      if (!CODIGOS_POSTALES_REPARTO[cpLimpio]) {
+        return res.status(400).json({
+          error: `El código postal (${cpLimpio || 'no indicado'}) está fuera del radio de reparto autorizado (5 km). Cobertura disponible: ${Object.entries(CODIGOS_POSTALES_REPARTO).map(([cp, z]) => `${cp} (${z})`).join(', ')}. Puedes pedir con recogida en local.`
+        });
+      }
     }
 
     const cp = codigo_postal || codigoPostal || null;
