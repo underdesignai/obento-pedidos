@@ -460,13 +460,13 @@ export default function CheckoutModal({ onOrderSuccess }) {
                 </div>
                 <div className="form-field" style={{ marginBottom: '12px' }}>
                   <label style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                    <span>
-                      {tipoEntrega === 'domicilio' ? '¿A qué hora deseas recibir tu pedido en tu domicilio?' : '¿A qué hora recogerás tu pedido en La Ñora?'}
-                    </span>
+                    {tipoEntrega === 'domicilio' && (
+                      <span>¿A qué hora deseas recibir tu pedido en tu domicilio?</span>
+                    )}
                     <span style={{ fontSize: '11px', color: '#a0998f', fontWeight: 'normal' }}>
                       {tipoEntrega === 'domicilio'
                         ? 'Elige hora aproximada de entrega para tu pedido.(Horario orientativo sujeto a demanda en cocina)'
-                        : 'Elige hora aproximada de recogida para tu pedido.(Horario orientativo sujeto a demanda en cocina)'}
+                        : 'Elige hora aproximada de recogida para tu pedido. Horario orientativo(Sujeto a demanda en cocina)'}
                     </span>
                   </label>
 
