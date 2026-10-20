@@ -459,8 +459,15 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   {tipoEntrega === 'domicilio' ? '2. Horario de Entrega Deseado' : '2. Horario de Recogida en Local'}
                 </div>
                 <div className="form-field" style={{ marginBottom: '12px' }}>
-                  <label>
-                    {tipoEntrega === 'domicilio' ? '¿A qué hora deseas recibir tu pedido en tu domicilio?' : '¿A qué hora recogerás tu pedido en La Ñora?'}
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    <span>
+                      {tipoEntrega === 'domicilio' ? '¿A qué hora deseas recibir tu pedido en tu domicilio?' : '¿A qué hora recogerás tu pedido en La Ñora?'}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#a0998f', fontWeight: 'normal' }}>
+                      {tipoEntrega === 'domicilio'
+                        ? 'Elige una hora aproximada de entrega para tu pedido.(orientativo depende de la demanda)'
+                        : 'Elige una hora aproximada de recogida para tu pedido.(orientativo depende de la demanda)'}
+                    </span>
                   </label>
 
                   <div className="custom-dropdown-wrap">
