@@ -4275,15 +4275,16 @@ img {
 
 .modalidad-slot-box {
   min-height: 142px;
-  max-height: 142px;
+  height: auto;
+  max-height: none;
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   margin-bottom: 14px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .modalidad-slot-box.takeaway {
@@ -4360,32 +4361,42 @@ img {
 .form-field-compact {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 4px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .form-field-compact label {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--c-text);
+  color: #e5e7eb;
   line-height: 1.2;
 }
 
 .form-field-compact input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--c-line);
-  border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 12px;
-  color: var(--c-text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #ffffff;
   outline: none;
   font-family: inherit;
-  height: 28px;
+  height: 35px;
   box-sizing: border-box;
+  cursor: text;
+  transition: all 0.2s ease;
 }
 
 .form-field-compact input:focus {
-  border-color: var(--c-gold);
+  border-color: #c81e22;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(200, 30, 34, 0.25);
+}
+
+.form-field-compact input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .form-grid-2-compact {
