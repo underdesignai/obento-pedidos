@@ -459,14 +459,25 @@ export default function FestiveCanvasOverlay() {
         fgCtx.restore();
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      if (!document.hidden) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
+
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     render();
 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('obento_cart_celebration', handleCelebration);
+      document.removeEventListener('visibilitychange', handleVisibility);
       cancelAnimationFrame(animationFrameId);
     };
   }, [themeConfig]);

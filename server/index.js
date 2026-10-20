@@ -848,6 +848,9 @@ if (fs.existsSync(distPath)) {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
+      } else if (filePath.includes(path.sep + 'assets' + path.sep) || filePath.includes('/assets/')) {
+        // Archivos Vite con hash: caché inmutable 1 año
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       }
     }
   }));
