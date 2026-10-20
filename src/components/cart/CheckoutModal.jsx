@@ -465,8 +465,8 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     </span>
                     <span style={{ fontSize: '11px', color: '#a0998f', fontWeight: 'normal' }}>
                       {tipoEntrega === 'domicilio'
-                        ? 'Elige una hora aproximada de entrega para tu pedido.(orientativo depende de la demanda)'
-                        : 'Elige una hora aproximada de recogida para tu pedido.(orientativo depende de la demanda)'}
+                        ? 'Elige hora aproximada de entrega para tu pedido.(Horario orientativo sujeto a demanda en cocina)'
+                        : 'Elige hora aproximada de recogida para tu pedido.(Horario orientativo sujeto a demanda en cocina)'}
                     </span>
                   </label>
 
