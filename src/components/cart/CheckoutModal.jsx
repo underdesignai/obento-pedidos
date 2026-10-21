@@ -20,18 +20,48 @@ export const CODIGOS_REPARTO_MAP = Object.fromEntries(
   ZONAS_REPARTO_PERMITIDAS.map(z => [z.cp, z.nombre])
 );
 
-const HORAS_DISPONIBLES = [
+const HORAS_RECOGIDA = [
   { label: 'Lo antes posible (~35-45 min)', val: 'Lo antes posible (~35-45 min)', icon: '⚡' },
   { label: 'En 1 hora', val: 'En 1 hora', icon: '🕒' },
   { label: 'En 1 hora y 30 minutos', val: 'En 1 hora y 30 minutos', icon: '🕒' },
+  { label: 'Para cenar a las 18:30h', val: 'Para cenar a las 18:30h', icon: '🍣' },
+  { label: 'Para cenar a las 19:00h', val: 'Para cenar a las 19:00h', icon: '🍣' },
+  { label: 'Para cenar a las 19:30h', val: 'Para cenar a las 19:30h', icon: '🍣' },
+  { label: 'Para cenar a las 20:00h', val: 'Para cenar a las 20:00h', icon: '🍣' },
+  { label: 'Para cenar a las 20:30h', val: 'Para cenar a las 20:30h', icon: '🍣' },
   { label: 'Para cenar a las 21:00h', val: 'Para cenar a las 21:00h', icon: '🍣' },
   { label: 'Para cenar a las 21:30h', val: 'Para cenar a las 21:30h', icon: '🍣' },
   { label: 'Para cenar a las 22:00h', val: 'Para cenar a las 22:00h', icon: '🍣' },
   { label: 'Para cenar a las 22:30h', val: 'Para cenar a las 22:30h', icon: '🍣' }
 ];
 
+const HORAS_DOMICILIO_VIE_SAB = [
+  { label: 'Lo antes posible (~35-45 min)', val: 'Lo antes posible (~35-45 min)', icon: '⚡' },
+  { label: 'En 1 hora', val: 'En 1 hora', icon: '🕒' },
+  { label: 'En 1 hora y 30 minutos', val: 'En 1 hora y 30 minutos', icon: '🕒' },
+  { label: 'Para cenar a las 19:00h', val: 'Para cenar a las 19:00h', icon: '🍣' },
+  { label: 'Para cenar a las 19:30h', val: 'Para cenar a las 19:30h', icon: '🍣' },
+  { label: 'Para cenar a las 20:00h', val: 'Para cenar a las 20:00h', icon: '🍣' },
+  { label: 'Para cenar a las 20:30h', val: 'Para cenar a las 20:30h', icon: '🍣' },
+  { label: 'Para cenar a las 21:00h', val: 'Para cenar a las 21:00h', icon: '🍣' },
+  { label: 'Para cenar a las 21:30h', val: 'Para cenar a las 21:30h', icon: '🍣' },
+  { label: 'Para cenar a las 22:00h', val: 'Para cenar a las 22:00h', icon: '🍣' },
+  { label: 'Para cenar a las 22:30h', val: 'Para cenar a las 22:30h', icon: '🍣' }
+];
 
-const HORAS_MIERCOLES = [
+const HORAS_DOMICILIO_MIE_JUE_DOM = [
+  { label: 'Lo antes posible (~35-45 min)', val: 'Lo antes posible (~35-45 min)', icon: '⚡' },
+  { label: 'En 1 hora', val: 'En 1 hora', icon: '🕒' },
+  { label: 'En 1 hora y 30 minutos', val: 'En 1 hora y 30 minutos', icon: '🕒' },
+  { label: 'Para cenar a las 20:00h', val: 'Para cenar a las 20:00h', icon: '🍣' },
+  { label: 'Para cenar a las 20:30h', val: 'Para cenar a las 20:30h', icon: '🍣' },
+  { label: 'Para cenar a las 21:00h', val: 'Para cenar a las 21:00h', icon: '🍣' },
+  { label: 'Para cenar a las 21:30h', val: 'Para cenar a las 21:30h', icon: '🍣' },
+  { label: 'Para cenar a las 22:00h', val: 'Para cenar a las 22:00h', icon: '🍣' },
+  { label: 'Para cenar a las 22:30h', val: 'Para cenar a las 22:30h', icon: '🍣' }
+];
+
+const HORAS_MIERCOLES_RECOGIDA = [
   { label: 'Miércoles a las 18:30h', val: 'Miércoles a las 18:30h', icon: '🍣' },
   { label: 'Miércoles a las 19:00h', val: 'Miércoles a las 19:00h', icon: '🍣' },
   { label: 'Miércoles a las 19:30h', val: 'Miércoles a las 19:30h', icon: '🍣' },
@@ -40,8 +70,16 @@ const HORAS_MIERCOLES = [
   { label: 'Miércoles a las 21:00h', val: 'Miércoles a las 21:00h', icon: '🍣' },
   { label: 'Miércoles a las 21:30h', val: 'Miércoles a las 21:30h', icon: '🍣' },
   { label: 'Miércoles a las 22:00h', val: 'Miércoles a las 22:00h', icon: '🍣' },
-  { label: 'Miércoles a las 22:30h', val: 'Miércoles a las 22:30h', icon: '🍣' },
-  { label: 'Miércoles a las 23:00h', val: 'Miércoles a las 23:00h', icon: '🍣' }
+  { label: 'Miércoles a las 22:30h', val: 'Miércoles a las 22:30h', icon: '🍣' }
+];
+
+const HORAS_MIERCOLES_DOMICILIO = [
+  { label: 'Miércoles a las 20:00h', val: 'Miércoles a las 20:00h', icon: '🍣' },
+  { label: 'Miércoles a las 20:30h', val: 'Miércoles a las 20:30h', icon: '🍣' },
+  { label: 'Miércoles a las 21:00h', val: 'Miércoles a las 21:00h', icon: '🍣' },
+  { label: 'Miércoles a las 21:30h', val: 'Miércoles a las 21:30h', icon: '🍣' },
+  { label: 'Miércoles a las 22:00h', val: 'Miércoles a las 22:00h', icon: '🍣' },
+  { label: 'Miércoles a las 22:30h', val: 'Miércoles a las 22:30h', icon: '🍣' }
 ];
 
 function getProximoMiercolesTextoCheckout() {
@@ -77,8 +115,19 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [email, setEmail] = useState('');
     const todayDay = new Date().getDay();
   const isLunesOMartes = todayDay === 1 || todayDay === 2;
+  const isViernesOSabado = todayDay === 5 || todayDay === 6;
   const proximoMiercoles = getProximoMiercolesTextoCheckout();
-  const horasActivas = isLunesOMartes ? HORAS_MIERCOLES : HORAS_DISPONIBLES;
+  const horasActivas = isLunesOMartes
+    ? (tipoEntrega === 'domicilio' ? HORAS_MIERCOLES_DOMICILIO : HORAS_MIERCOLES_RECOGIDA)
+    : (tipoEntrega === 'domicilio'
+        ? (isViernesOSabado ? HORAS_DOMICILIO_VIE_SAB : HORAS_DOMICILIO_MIE_JUE_DOM)
+        : HORAS_RECOGIDA);
+
+  useEffect(() => {
+    if (!horasActivas.some((h) => h.val === horaRecogida)) {
+      setHoraRecogida(horasActivas[0]?.val || 'Lo antes posible (~35-45 min)');
+    }
+  }, [tipoEntrega, horasActivas]);
 
   const [horaRecogida, setHoraRecogida] = useState(() => {
     const d = new Date().getDay();
@@ -376,7 +425,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   >
                     <span style={{ fontSize: '20px', lineHeight: 1 }}>🥡</span>
                     <span style={{ fontWeight: 700, fontSize: '13px' }}>Recogida en local</span>
-                    <span style={{ fontSize: '11px', color: '#a0998f' }}>Calle Amargura 3, La Ñora</span>
+                    <span style={{ fontSize: '11px', color: '#a0998f' }}>
+                      {isLunesOMartes ? 'Próximo: Mié 18:00' : 'Hoy abierto desde 18:00'}
+                    </span>
                   </button>
 
                   <button
@@ -403,7 +454,13 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   >
                     <span style={{ fontSize: '20px', lineHeight: 1 }}>🛵</span>
                     <span style={{ fontWeight: 700, fontSize: '13px' }}>Entrega a Domicilio</span>
-                    <span style={{ fontSize: '11px', color: '#4ade80' }}>Reparto oficial Obento</span>
+                    <span style={{ fontSize: '11px', color: '#4ade80' }}>
+                      {isLunesOMartes
+                        ? 'Próximo: Mié 20:00'
+                        : isViernesOSabado
+                        ? 'Reparto hoy: 19:00 a 23:30'
+                        : 'Reparto hoy: 20:00 a 23:30'}
+                    </span>
                   </button>
                 </div>
 
@@ -498,8 +555,10 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     )}
                     <span style={{ fontSize: '11px', color: '#a0998f', fontWeight: 'normal' }}>
                       {tipoEntrega === 'domicilio'
-                        ? 'Elige hora aproximada de entrega para tu pedido.(Horario orientativo sujeto a demanda en cocina)'
-                        : 'Elige hora aproximada de recogida para tu pedido. Horario orientativo(Sujeto a demanda en cocina)'}
+                        ? (isViernesOSabado
+                            ? 'Reparto hoy de 19:00 a 23:30 h. (Horario orientativo sujeto a demanda en cocina)'
+                            : 'Reparto hoy de 20:00 a 23:30 h. (Horario orientativo sujeto a demanda en cocina)')
+                        : 'Recogida hoy de 18:00 a 23:30 h. (Horario orientativo sujeto a demanda en cocina)'}
                     </span>
                   </label>
 
@@ -516,7 +575,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     }}>
                       <span style={{ fontSize: '16px' }}>📅</span>
                       <span style={{ fontSize: '12px', color: '#fca5a5', fontWeight: 600 }}>
-                        Día de recogida/entrega: <strong style={{ color: '#fff' }}>{proximoMiercoles}</strong> (18:30 a 23:00)
+                        Día de {tipoEntrega === 'domicilio' ? 'entrega a domicilio' : 'recogida'}: <strong style={{ color: '#fff' }}>{proximoMiercoles}</strong> ({tipoEntrega === 'domicilio' ? '20:00 a 23:30' : '18:30 a 23:30'})
                       </span>
                     </div>
                   )}
