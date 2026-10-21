@@ -1,0 +1,9 @@
+# Robots.txt — Obento Pedidos PWA
+User-agent: *
+Allow: /
+Allow: /assets/
+Allow: /images/
+Allow: /icons/
+Disallow: /api/
+
+Sitemap: https://pedidos.obentojapanesefood.es/sitemap.xml

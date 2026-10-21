@@ -841,6 +841,18 @@ const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, '../dist');
 
 if (fs.existsSync(distPath)) {
+  app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(distPath, 'robots.txt'));
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(distPath, 'sitemap.xml'));
+  });
+
   app.use(express.static(distPath, {
     maxAge: '7d',
     setHeaders: (res, filePath) => {
