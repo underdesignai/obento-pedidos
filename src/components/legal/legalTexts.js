@@ -16,14 +16,14 @@ export const LEGAL_DOCS = {
 • **Titular / Razón Social:** Obento Japanese Food (Titularidad mercantil / Persona física en régimen de autónomos)
 • **N.I.F. / C.I.F.:** B-73891245 (o N.I.F. del titular de la explotación hostelera)
 • **Domicilio del Establecimiento:** Calle Amargura, 3, C.P. 30830 La Ñora, Murcia (España)
-• **Correo Electrónico de Contacto:** info@obentojapanesefood.es / contacto@obento.flowprintcorp.com
+• **Correo Electrónico de Contacto:** info@obentojapanesefood.es
 • **Teléfono de Atención al Cliente:** +34 613 927 596
 • **Actividad:** Servicio de elaboración de comidas preparadas para llevar y entrega a domicilio (CNAE 5610 - Restaurantes y puestos de comidas).
 • **Registro Sanitario / Autorización:** Inscrito en el Registro General Sanitario de Empresas Alimentarias y Alimentos (RGSEAA) correspondiente a la Región de Murcia.`
       },
       {
         heading: '2. Objeto y Ámbito de Aplicación',
-        content: `El presente Aviso Legal regula el acceso, navegación y uso del sitio web accesible a través del dominio https://obento.flowprintcorp.com (en adelante, el "Sitio Web"), así como las responsabilidades derivadas de la utilización de sus contenidos (textos, gráficos, fotografías, código fuente, logotipos y software).
+        content: `El presente Aviso Legal regula el acceso, navegación y uso del sitio web accesible a través de los dominios https://obentojapanesefood.es y https://pedidos.obentojapanesefood.es (en adelante, el "Sitio Web"), así como las responsabilidades derivadas de la utilización de sus contenidos (textos, gráficos, fotografías, código fuente, logotipos y software).
 
 El acceso o la mera utilización del Sitio Web atribuye la condición de Usuario e implica la adhesión plena y sin reservas a las condiciones vigentes en cada momento en que se acceda.`
       },
