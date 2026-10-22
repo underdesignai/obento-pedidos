@@ -212,6 +212,18 @@ export async function sendOrderConfirmedEmail(to, data) {
       ? `Hemos recibido tu pedido a domicilio correctamente y tu pago con tarjeta ha sido confirmado. La cocina de Obento ya ha recibido la comanda y está preparando tus platos con ingredientes frescos. Te enviaremos un correo en cuanto nuestro repartidor salga hacia tu puerta.`
       : `Tu comanda a domicilio ya está en marcha en cocina. El importe total de <strong style="color:#fbbf24;">${totalFormatted} €</strong> se abonará al repartidor al recibir el pedido (en efectivo o con tarjeta).`;
 
+    const hasScheduledTime = data.hora_recogida && 
+      data.hora_recogida.trim() !== '' && 
+      !data.hora_recogida.toLowerCase().includes('lo antes posible');
+
+    const estimatedDeliveryHtml = hasScheduledTime
+      ? `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+          🕒 <strong>Hora solicitada de entrega:</strong> <span style="color:#4ade80;font-weight:bold;">${data.hora_recogida}</span>
+        </div>`
+      : `<div style="font-size:13px;color:#d1d5db;margin-top:6px;">
+          ⏱️ <strong>Tiempo estimado de entrega:</strong> <span style="color:#4ade80;font-weight:bold;">${data.hora_recogida || '30 - 45 minutos aprox.'}</span>
+        </div>`;
+
     deliveryDetailsHtml = `
       <div style="font-size:13px;color:#d1d5db;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;margin-top:6px;">
         🛵 <strong>Tipo de entrega:</strong> <span style="color:#f3ede0;">Entrega a domicilio</span>
@@ -222,9 +234,7 @@ export async function sendOrderConfirmedEmail(to, data) {
         ${data.direccion_detalles ? `<br/><span style="color:#9ca3af;font-size:12px;">(${data.direccion_detalles})</span>` : ''}
         ${data.codigo_postal ? `<br/><span style="color:#9ca3af;font-size:12px;">C.P. ${data.codigo_postal}</span>` : ''}
       </div>
-      <div style="font-size:13px;color:#d1d5db;margin-top:6px;">
-        ⏱️ <strong>Tiempo estimado de entrega:</strong> <span style="color:#4ade80;font-weight:bold;">30 - 45 minutos aprox.</span>
-      </div>
+      ${estimatedDeliveryHtml}
     `;
 
     paymentDetailLine = isOnlinePay
