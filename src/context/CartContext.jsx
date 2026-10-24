@@ -155,11 +155,27 @@ export function CartProvider({ children }) {
   const totalCount = cart.reduce((sum, item) => sum + item.cantidad, 0);
   const totalPrice = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
+  // Base imponible para el descuento del cupón:
+  // Solo platos de comida (las bebidas quedan excluidas por regla de negocio).
+  // Si el cupón define platosIds específicos, solo se calculan sobre esos platos.
+  const eligibleSubtotal = cart.reduce((sum, item) => {
+    const cat = (item.cat || item.categoria || '').toLowerCase();
+    if (cat === 'bebidas') return sum; // Las bebidas nunca tienen descuento
+
+    if (appliedCoupon?.platosIds && Array.isArray(appliedCoupon.platosIds) && appliedCoupon.platosIds.length > 0) {
+      const isEligible = appliedCoupon.platosIds.some((pid) => String(pid) === String(item.id));
+      if (!isEligible) return sum;
+    }
+
+    const itemSubtotal = Number(item.subtotal) || (Number(item.precio) * Number(item.cantidad)) || 0;
+    return sum + itemSubtotal;
+  }, 0);
+
   // Calcular descuento actual del cupón
-  const couponDiscount = appliedCoupon
+  const couponDiscount = appliedCoupon && eligibleSubtotal > 0
     ? appliedCoupon.tipo === 'porcentaje'
-      ? Number(((totalPrice * appliedCoupon.descuento) / 100).toFixed(2))
-      : Math.min(totalPrice, appliedCoupon.descuento)
+      ? Number(((eligibleSubtotal * appliedCoupon.descuento) / 100).toFixed(2))
+      : Math.min(eligibleSubtotal, Number(appliedCoupon.descuento))
     : 0;
 
   const finalPrice = Math.max(0, Number((totalPrice - couponDiscount).toFixed(2)));
@@ -180,9 +196,38 @@ export function CartProvider({ children }) {
       });
       const data = await res.json();
       if (res.ok && data.valido) {
-        setAppliedCoupon(data.cupon);
+        const cupon = data.cupon;
+
+        // Comprobar si el cupón está restringido a platos específicos
+        if (cupon.platosIds && Array.isArray(cupon.platosIds) && cupon.platosIds.length > 0) {
+          const hasMatchingDish = cart.some((item) => {
+            const cat = (item.cat || item.categoria || '').toLowerCase();
+            if (cat === 'bebidas') return false;
+            return cupon.platosIds.some((pid) => String(pid) === String(item.id));
+          });
+
+          if (!hasMatchingDish) {
+            setCouponError('Este cupón solo es válido para platos específicos que no están en tu carrito.');
+            setIsApplyingCoupon(false);
+            return { ok: false, error: 'Sin platos aplicables en el carrito' };
+          }
+        } else {
+          // Si es cupón general, comprobar que no sean solo bebidas
+          const hasFoodDish = cart.some((item) => {
+            const cat = (item.cat || item.categoria || '').toLowerCase();
+            return cat !== 'bebidas';
+          });
+
+          if (!hasFoodDish && cart.length > 0) {
+            setCouponError('Las bebidas no tienen descuento. Añade un plato para aplicar este cupón.');
+            setIsApplyingCoupon(false);
+            return { ok: false, error: 'Solo bebidas en el carrito' };
+          }
+        }
+
+        setAppliedCoupon(cupon);
         setIsApplyingCoupon(false);
-        return { ok: true, cupon: data.cupon };
+        return { ok: true, cupon };
       } else {
         setCouponError(data.error || 'Cupón inválido');
         setIsApplyingCoupon(false);
@@ -213,6 +258,7 @@ export function CartProvider({ children }) {
         finalPrice,
         appliedCoupon,
         couponDiscount,
+        eligibleSubtotal,
         couponError,
         isApplyingCoupon,
         applyCoupon,

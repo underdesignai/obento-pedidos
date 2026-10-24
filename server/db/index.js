@@ -470,7 +470,7 @@ export async function validarCuponDb(codigo, subtotal = 0) {
     if (!cleanCode) return { valido: false, error: 'Código de cupón vacío' };
 
     const res = await pool.query(`
-      SELECT id, codigo, descripcion, descuento, tipo, minimo, activo, usos, "maxUsos"
+      SELECT id, codigo, descripcion, descuento, tipo, minimo, activo, usos, "maxUsos", "platosIds"
       FROM "Cupon"
       WHERE UPPER(codigo) = $1
     `, [cleanCode]);
@@ -495,6 +495,16 @@ export async function validarCuponDb(codigo, subtotal = 0) {
       };
     }
 
+    let platosIds = null;
+    if (c.platosIds) {
+      try {
+        platosIds = typeof c.platosIds === 'string' ? JSON.parse(c.platosIds) : c.platosIds;
+        if (!Array.isArray(platosIds)) platosIds = null;
+      } catch (_) {
+        platosIds = null;
+      }
+    }
+
     let descuentoCalculado = 0;
     if (c.tipo === 'porcentaje') {
       descuentoCalculado = (Number(subtotal) * Number(c.descuento)) / 100;
@@ -511,7 +521,8 @@ export async function validarCuponDb(codigo, subtotal = 0) {
         tipo: c.tipo,
         descuento: Number(c.descuento),
         descuentoCalculado: Number(descuentoCalculado.toFixed(2)),
-        minimo: c.minimo ? Number(c.minimo) : null
+        minimo: c.minimo ? Number(c.minimo) : null,
+        platosIds: platosIds
       }
     };
   } catch (err) {

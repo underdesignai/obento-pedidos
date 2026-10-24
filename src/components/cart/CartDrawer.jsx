@@ -182,10 +182,17 @@ export default function CartDrawer() {
             <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               {appliedCoupon ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: 6, padding: '8px 12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#4ade80' }}>🏷️ {appliedCoupon.codigo}</span>
-                    <span style={{ fontSize: 11, color: '#86efac' }}>
-                      (-{appliedCoupon.tipo === 'porcentaje' ? `${appliedCoupon.descuento}%` : `${appliedCoupon.descuento}€`})
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#4ade80' }}>🏷️ {appliedCoupon.codigo}</span>
+                      <span style={{ fontSize: 11, color: '#86efac' }}>
+                        (-{appliedCoupon.tipo === 'porcentaje' ? `${appliedCoupon.descuento}%` : `${appliedCoupon.descuento}€`})
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)' }}>
+                      {appliedCoupon.platosIds && appliedCoupon.platosIds.length > 0
+                        ? '• Aplicado a los platos seleccionados'
+                        : '• Aplicado a platos de comida (bebidas excluidas)'}
                     </span>
                   </div>
                   <button
