@@ -8252,6 +8252,32 @@ body.theme-halloween .btn-add-to-order {
   border: 1px solid rgba(255, 180, 100, 0.3) !important;
 }
 
+body.theme-halloween .btn-add-to-order.btn-in-cart,
+body.theme-halloween .btn-add-to-order.btn-added,
+body .btn-add-to-order.btn-in-cart,
+body .btn-add-to-order.btn-added,
+.btn-add-to-order.btn-in-cart {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  border: 1px solid #22c55e !important;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.45) !important;
+}
+
+body.theme-halloween .btn-add-to-order.btn-in-cart:hover,
+body .btn-add-to-order.btn-in-cart:hover,
+.btn-add-to-order.btn-in-cart:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #166534 100%) !important;
+  background-color: #15803d !important;
+  border-color: #16a34a !important;
+  box-shadow: 0 4px 18px rgba(34, 197, 94, 0.6) !important;
+}
+
+body.theme-halloween .dish-order-card.is-in-cart {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.35), 0 10px 28px rgba(0, 0, 0, 0.7) !important;
+}
+
 body.theme-halloween .dish-order-price-tag {
   background: rgba(255, 117, 24, 0.95) !important;
   color: #120e0b !important;

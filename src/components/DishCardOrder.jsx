@@ -22,7 +22,9 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
   const [addedEffect, setAddedEffect] = useState(false);
 
   // Comprobar si el plato ya está en la cesta
-  const cartItemsOfDish = (cart || []).filter((item) => String(item.id) === String(dish.id));
+  const cartItemsOfDish = (cart || []).filter(
+    (item) => String(item.id) === String(dish.id) || (item.nombre && item.nombre === dish.nombre)
+  );
   const inCartQty = cartItemsOfDish.reduce((sum, item) => sum + (item.cantidad || 0), 0);
   const isInCart = inCartQty > 0;
 
@@ -151,6 +153,17 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
             type="button"
             className={`btn-add-to-order ${isInCart ? 'btn-in-cart' : ''} ${addedEffect ? 'just-added-btn' : ''}`}
             onClick={handleAdd}
+            style={
+              isInCart
+                ? {
+                    background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)',
+                    backgroundColor: '#16a34a',
+                    borderColor: '#22c55e',
+                    boxShadow: '0 4px 16px rgba(34, 197, 94, 0.45)',
+                    color: '#ffffff',
+                  }
+                : undefined
+            }
             title={isInCart ? `Ya en el pedido (${inCartQty}). Haz clic para añadir más.` : `Añadir al pedido`}
           >
             {isInCart ? (
@@ -158,7 +171,7 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="btn-ico-svg">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <span>✓ ¡Añadido!{inCartQty > 1 ? ` (${inCartQty})` : ''}</span>
+                <span>✓ Añadido{inCartQty > 1 ? ` (${inCartQty})` : ''}</span>
               </>
             ) : (
               <>
@@ -166,7 +179,7 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
-                <span>Añadir {fmt(currentPrice * cantidad)}</span>
+                <span>+ Añadir {fmt(currentPrice * cantidad)}</span>
               </>
             )}
           </button>
