@@ -137,6 +137,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [notas, setNotas] = useState('');
   const [metodoPago, setMetodoPago] = useState('stripe'); // 'stripe' | 'restaurante'
   const [necesitaCubiertos, setNecesitaCubiertos] = useState(true);
+  const [numPersonas, setNumPersonas] = useState(2);
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
 
   // Estados de la tarjeta bancaria (Simulación interactiva)
@@ -240,7 +241,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
       direccion_detalles: tipoEntrega === 'domicilio' ? direccionDetalles.trim() : null,
       codigo_postal: tipoEntrega === 'domicilio' ? codigoPostal.trim() : null,
       hora_recogida: horaRecogida,
-      notas: `${necesitaCubiertos ? 'Incluir palillos y soja. ' : 'Sin palillos. '}${notas}`.trim(),
+      notas: `${necesitaCubiertos ? `Incluir palillos y soja (${numPersonas} ${Number(numPersonas) === 1 ? 'persona' : 'personas'}). ` : 'Sin palillos. '}${notas}`.trim(),
       metodo_pago: metodoPago,
       estado_pago: 'pendiente_local',
       items: cart,
@@ -266,7 +267,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
             direccion_detalles: tipoEntrega === 'domicilio' ? direccionDetalles.trim() : null,
             codigo_postal: tipoEntrega === 'domicilio' ? codigoPostal.trim() : null,
             hora_recogida: horaRecogida,
-            notas: `${necesitaCubiertos ? 'Incluir palillos y soja. ' : 'Sin palillos. '}${notas}`.trim(),
+            notas: `${necesitaCubiertos ? `Incluir palillos y soja (${numPersonas} ${Number(numPersonas) === 1 ? 'persona' : 'personas'}). ` : 'Sin palillos. '}${notas}`.trim(),
             items: cart,
             total: finalPrice
           })
@@ -629,8 +630,8 @@ export default function CheckoutModal({ onOrderSuccess }) {
                 </div>
 
                 {/* 3. Preferencias de Cocina */}
-                <div className="form-checkbox-row" style={{ margin: '8px 0 10px' }}>
-                  <label className="checkbox-label">
+                <div className="form-checkbox-row" style={{ margin: '8px 0 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+                  <label className="checkbox-label" style={{ margin: 0, flex: '1 1 auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <input
                       type="checkbox"
                       checked={necesitaCubiertos}
@@ -639,6 +640,34 @@ export default function CheckoutModal({ onOrderSuccess }) {
                     />
                     <span>Deseo palillos japoneses, servilletas y soja</span>
                   </label>
+
+                  {necesitaCubiertos && (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <select
+                        value={numPersonas}
+                        onChange={(e) => setNumPersonas(Number(e.target.value))}
+                        disabled={loading}
+                        aria-label="Cantidad de personas"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(255, 255, 255, 0.2)',
+                          borderRadius: '7px',
+                          padding: '4px 8px',
+                          fontSize: '12px',
+                          color: '#ffffff',
+                          height: '32px',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value={1} style={{ background: '#1c1815', color: '#ffffff' }}>1 persona</option>
+                        <option value={2} style={{ background: '#1c1815', color: '#ffffff' }}>2 personas</option>
+                        <option value={3} style={{ background: '#1c1815', color: '#ffffff' }}>3 personas</option>
+                        <option value={4} style={{ background: '#1c1815', color: '#ffffff' }}>4 personas</option>
+                        <option value={5} style={{ background: '#1c1815', color: '#ffffff' }}>5 personas</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 <div className="form-field" style={{ marginBottom: 0 }}>
